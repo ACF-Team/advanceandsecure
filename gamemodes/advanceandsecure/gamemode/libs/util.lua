@@ -60,18 +60,20 @@ AAS.Funcs.GetSetting	= function(Index, Default)
 	return AAS.GM.Settings[Index].value
 end
 
-function GM:CreateTeams()
-	team.SetUp(1, "A", Color(0,0,255), true)
-	team.SetUp(2, "B", Color(255,0,0), true)
+do	-- Team Screwery
+	function GM:CreateTeams()
+		team.SetUp(1, "A", Color(0,0,255), true)
+		team.SetUp(2, "B", Color(255,0,0), true)
 
-	-- Won't actually be used as intended
-	team.SetSpawnPoint("A","aas_spawnpoint")
-	team.SetSpawnPoint("B","aas_spawnpoint")
-end
+		-- Won't actually be used as intended
+		team.SetSpawnPoint("A","aas_spawnpoint")
+		team.SetSpawnPoint("B","aas_spawnpoint")
+	end
 
-function team.GetColor(Index)
-	local col = AAS.Funcs.GetTeamInfo(Index).Color
-	return Color(col.r, col.g, col.b, 255)
+	function team.GetColor(Index)
+		local col = AAS.Funcs.GetTeamInfo(Index).Color
+		return Color(col.r, col.g, col.b, 255)
+	end
 end
 
 local maleDeath = {

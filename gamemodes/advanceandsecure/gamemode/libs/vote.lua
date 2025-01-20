@@ -51,14 +51,14 @@ if SERVER then
 			if #Maps == 0 then AAS.Funcs.finishVote(5) return end
 		end
 
-		for i = 1,math.min(#Maps,3),1 do
-			local Pick = math.random(1,#Maps)
+		for i = 1, math.min(#Maps, 3), 1 do
+			local Pick = math.random(1, #Maps)
 			Choices[i] = Maps[Pick]
-			table.remove(Maps,Pick)
+			table.remove(Maps, Pick)
 		end
 
 		AAS.Voting = true
-		SetGlobalBool("AAS.Voting",AAS.Voting)
+		SetGlobalBool("AAS.Voting", AAS.Voting)
 
 		AAS.RTV = (#Maps > 0)
 
@@ -164,6 +164,7 @@ else	-- Cient
 		VotePanel:SetDraggable(false)
 		VotePanel:ShowCloseButton(false)
 		VotePanel:MakePopup()
+		VotePanel:SetKeyboardInputEnabled(false)
 		VotePanel.Paint = function(self,w,h)
 			surface.SetDrawColor(75,75,75)
 			surface.DrawRect(0,0,w,h)
@@ -171,39 +172,39 @@ else	-- Cient
 			surface.SetDrawColor(25,25,25)
 			surface.DrawRect(0,0,w,36)
 
-			draw.SimpleText("MAP VOTING","BasicFontLarge",w / 2,10,Colors.White,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("MAP VOTING", "BasicFontLarge", w / 2, 10, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			local TimeLeft = math.Clamp(math.Round(Time - CT(),1),0,30)
 
 			if TimeLeft < 10 then surface.SetDrawColor(200,0,0) else surface.SetDrawColor(0,200,0) end
 			surface.DrawRect(0,h - 12,w * (TimeLeft / 30),12)
-			draw.SimpleText("TIME REMAINING: " .. tostring(TimeLeft),"BasicFont",w / 2,h,Colors.White,TEXT_ALIGN_CENTER,TEXT_ALIGN_BOTTOM)
+			draw.SimpleText("TIME REMAINING: " .. tostring(TimeLeft), "BasicFont", w / 2, h, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 		end
 		VotePanel:SetTitle("")
 
 		local shift = 0
 		local selected = 0
 		for k,v in ipairs(Choices) do
-			local button = vgui.Create("DButton",VotePanel)
-			button:SetSize(250,30)
-			button:SetPos(25,60 + shift)
+			local button = vgui.Create("DButton", VotePanel)
+			button:SetSize(250, 30)
+			button:SetPos(25, 60 + shift)
 			button.ID = v
 			button.Index = k
 			button:SetText("")
-			button.Paint = function(self,w,h)
-				surface.SetDrawColor(25,25,25)
-				surface.DrawRect(0,0,w,h)
+			button.Paint = function(self, w, h)
+				surface.SetDrawColor(25, 25, 25)
+				surface.DrawRect(0, 0, w, h)
 
 				if self:IsHovered() then
 					surface.SetDrawColor(0,65,0)
-					surface.DrawRect(4,4,w - 8,h - 8)
+					surface.DrawRect(4, 4, w - 8, h - 8)
 				end
 
-				if selected == self.Index then surface.SetDrawColor(0,127,0) else surface.SetDrawColor(100,100,100) end
-				surface.DrawRect(0,0,h,h)
+				if selected == self.Index then surface.SetDrawColor(0, 127, 0) else surface.SetDrawColor(100, 100, 100) end
+				surface.DrawRect(0, 0, h, h)
 
-				draw.SimpleText(tostring(GetGlobal2Int("vote_" .. self.Index,0)),"BasicFontLarge",h / 2,h / 2,Colors.White,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw.SimpleText(tostring(GetGlobal2Int("vote_" .. self.Index, 0)), "BasicFontLarge", h / 2, h / 2, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-				draw.SimpleText(self.ID,"BasicFont14",h + 4,h / 2,Colors.White,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+				draw.SimpleText(self.ID, "BasicFont14", h + 4, h / 2, Colors.White, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 			end
 			button.DoClick = function(self)
 				if math.Clamp(math.Round(Time - CT(),1),0,30) == 0 then VotePanel:Remove() return end

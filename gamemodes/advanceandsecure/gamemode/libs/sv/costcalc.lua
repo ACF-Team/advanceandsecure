@@ -200,40 +200,6 @@ end
 do
 	do	-- Functions
 
-		-- Anything can be passed to Change
-		-- If it is POSITIVE it is a charge
-		-- If it is NEGATIVE it is a gain
-		-- Reason is optional, it'll change the message to display it
-		function AAS.Funcs.ChargeRequisition(Ply,Change,Reason)
-			local Current = Ply:GetNW2Int("Requisition",0)
-			Change = math.Round(Change)
-			if Change > 0 then -- Deduct
-				if Change > Current then return false, "Overdrawn" end
-				Ply:SetNW2Int("Requisition",Current - Change)
-			else
-				Ply:SetNW2Int("Requisition",math.min(Current + math.abs(Change), AAS.Funcs.GetSetting("Max Requisition", 500)))
-			end
-			local Diff = Ply:GetNW2Int("Requisition",0) - Current
-
-			if Diff == 0 then
-				return true
-			end
-
-			local msg = {Colors.BasicCol}
-			if Diff > 0 then
-				table.Add(msg,{"You received ",Colors.GoodCol,tostring(math.abs(Diff))})
-			elseif Diff < 0 then
-				table.Add(msg,{"You were charged ",Colors.BadCol,tostring(math.abs(Diff))})
-			end
-			table.insert(msg,Colors.BasicCol)
-			if Reason then table.insert(msg," points for: " .. Reason .. ". Current amount: ") else table.insert(msg," points. Current amount: ") end
-			table.Add(msg,{Colors.GoodCol,tostring(Ply:GetNW2Int("Requisition",0)),Colors.BasicCol,"."})
-
-			aasMsg(msg,Ply)
-
-			return true
-		end
-
 		function AAS.Funcs.CalcCost(E)
 			local Class = E:GetClass()
 			if not AAS.RequisitionCosts.CalcSingleFilter[Class] then return 0 end
@@ -363,14 +329,14 @@ do
 				end
 
 				if GetGlobalBool("EditMode",false) == false then
-					aasMsg({Colors.BasicCol,"After 10 seconds this will cost you ",Color(255,127,127),tostring(Cost),Colors.BasicCol," of your ",Colors.GoodCol,tostring(Ply:GetNW2Int("Requisition",0)),Colors.BasicCol," requisition."},Ply)
+					aasMsg({Colors.BasicCol, "After 10 seconds this will cost you ", Color(255,127,127), tostring(Cost), Colors.BasicCol, " of your ", Colors.GoodCol, tostring(Ply:GetRequisition()), Colors.BasicCol, " requisition."}, Ply)
 
 					timer.Simple(10,function()
 						if not (IsValid(CheckEnt) or IsValid(SecondCheckEnt)) then return end
 
 						print("Charging " .. Ply:Nick() .. " for " .. Cost)
 
-						local CanAfford = AAS.Funcs.ChargeRequisition(Dupe[1].Player, Cost, "Cost of dupe")
+						local CanAfford = Dupe[1].Player:ChargeRequisition(Cost, "Cost of dupe")
 
 						if not CanAfford then
 							aasMsg({Colors.ErrorCol,"You can't afford this dupe!"},Ply)

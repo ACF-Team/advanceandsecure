@@ -17,16 +17,21 @@ AAS.Funcs.DefineGamemode("invasion", GMT)
 GMT.Name	= "Invasion"
 GMT.Desc	= "Attackers versus defenders"
 
+AAS.SettingsFuncs.Remove(GMT, "Non-linear") -- By nature points *must* be connected
+
 GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here, like placing points/spawns
-
+GMT.Load	= function(MapData) -- Assemble the map here
+	AAS.State.Data["Line"] = MapData.Data.Line
+	AAS.State.LineLookup	= {}
+	for k,v in ipairs(AAS.State.Data["Line"]) do
+		AAS.State.LineLookup[AAS.State.Alias[v]] = k
+	end
 end
 
 GMT.Save	= function(MapData) -- Return false to abort saving for any reason
-
 	return true
 end
 

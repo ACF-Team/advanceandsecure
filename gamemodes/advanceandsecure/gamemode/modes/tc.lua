@@ -27,9 +27,10 @@ GMT.Desc	= "Hex-based zone capturing across the map"
 
 GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
+	AAS.Grid	= require("hexgrid")
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here, like placing points/spawns
+GMT.Load	= function(MapData) -- Assemble the map here
 	-- Load grid settings
 end
 

@@ -26,6 +26,8 @@ if SERVER then
 		Data		= {},
 		State		= 1,
 
+		SkyCam		= false,
+		SkyboxBounds	= {},
 		LowestZ		= 16384,
 		Output		= {}
 	}
@@ -47,17 +49,20 @@ if SERVER then
 		local z = 16384
 		local dig = false
 
-		while breakloop < 25 do
+		while breakloop < 31 do
 			if dig then
 				start.z = z
-				if util.IsInWorld(start) then
+
+				if ScanState.SkyCam and start:WithinAABox(ScanState.SkyboxBounds.min, ScanState.SkyboxBounds.max) then
+					z = ScanState.SkyboxBounds.min.z - 1024
+				elseif util.IsInWorld(start) then
 					dig = false
 
 					tracedata.start = start
 					tracedata.endpos = start - Vector(0, 0, 32768)
 				else
 					if z <= -16384 then return false end
-					z = z - 128
+					z = z - 256
 				end
 			else
 				local tr = util.TraceLine(tracedata)
@@ -220,8 +225,6 @@ if SERVER then
 					ScanState.Running	= false
 					ScanState.Finished	= true
 
-					--PrintTable(ScanState.Output)
-
 					hook.Remove("Tick", "AAS.ScanTick")
 
 					for ply, _ in pairs(Queued) do
@@ -240,6 +243,13 @@ if SERVER then
 		end
 	end
 
+	local dir	= {
+		["N"] = Vector(1, 0, 0),
+		["E"] = Vector(0, 1, 0),
+		["S"] = Vector(-1, 0, 0),
+		["W"] = Vector(0, -1, 0)
+	}
+
 	AAS.Funcs.StartScan	= function()
 
 		ScanState.x			= 1
@@ -250,6 +260,40 @@ if SERVER then
 		ScanState.LowestZ	= 16384
 		ScanState.Data		= {}
 		ScanState.Output	= {}
+		ScanState.SkyCam	= false
+		ScanState.SkyboxBounds	= {}
+
+		local skycam		= ents.FindByClass("sky_camera")[1]
+
+		if IsValid(skycam) then
+			print("[AAS Mapscan] Sky Camera found, collecting 3D skybox bounds...")
+
+			local campos	= skycam:GetPos()
+
+			local top	= util.TraceLine({start = campos, endpos = campos + (vector_up * 4096)})
+
+			local bottom = util.TraceLine({start = campos, endpos = campos + (vector_up * -4096)})
+			if bottom.DispFlags > 0 then bottom = util.TraceLine({start = bottom.HitPos, endpos = bottom.HitPos - vector_up + (vector_up * -4096)}) end -- some silly bastard put displacements below the skybox camera, so try again just below that
+
+			local c1 = util.TraceLine({start = top.HitPos, endpos = top.HitPos + dir["N"] * 8192}).HitPos + (dir["N"] * 1024)
+			local c2 = util.TraceLine({start = top.HitPos, endpos = top.HitPos + dir["E"] * 8192}).HitPos + (dir["E"] * 1024)
+			local c3 = util.TraceLine({start = top.HitPos, endpos = top.HitPos + dir["S"] * 8192}).HitPos + (dir["S"] * 1024)
+			local c4 = util.TraceLine({start = top.HitPos, endpos = top.HitPos + dir["W"] * 8192}).HitPos + (dir["W"] * 1024)
+
+			local corner1 = Vector(math.min(c1.x, c2.x, c3.x, c4.x), math.min(c1.y, c2.y, c3.y, c4.y), bottom.HitPos.z - 256)
+			local corner2 = Vector(math.max(c1.x, c2.x, c3.x, c4.x), math.max(c1.y, c2.y, c3.y, c4.y), top.HitPos.z + 256)
+
+			debugoverlay.Cross(campos, 16, 15, Color(0, 0, 255), true)
+
+			debugoverlay.Cross(corner1, 32, 15, Color(255, 0, 0), true)
+			debugoverlay.Cross(corner2, 32, 15, Color(0, 255, 0), true)
+
+			local mid = (corner1 + corner2) / 2
+			debugoverlay.Box(mid, mid - corner1, mid - corner2, 15, Color(0, 255, 0, 27))
+
+			ScanState.SkyCam = true
+			ScanState.SkyboxBounds = {min = corner1, max = corner2}
+		end
 
 		hook.Remove("Tick", "AAS.ScanTick")
 		hook.Add("Tick", "AAS.ScanTick", Scan)

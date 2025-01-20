@@ -14,7 +14,7 @@ GMT.Init	= function(MapData)	-- Setup whatever is required for this gamemode to 
 	AAS.Funcs.UpdateState()
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here, like placing points/spawns
+GMT.Load	= function(MapData) -- Assemble the map here
 	if MapData.Settings["Non-linear"] == true then return end
 
 	AAS.State.Data["Line"] = MapData.Data.Line
@@ -27,7 +27,7 @@ end
 GMT.Save	= function(MapData) -- Return false to abort saving for any reason
 	-- Save the links between points
 	if AAS.Funcs.GetSetting("Non-linear", false) == false then
-		if not AAS.State.Data["Line"] then ErrorNoHalt("No line defined") return false end
+		if not AAS.State.Data["Line"] then aasMsg({Colors.ErrorCol,"[AAS] No point line defined, aborting."}) return false end
 		MapData.Data.Line	= AAS.State.Data["Line"]
 
 		return true

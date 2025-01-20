@@ -132,14 +132,16 @@ DefaultMode.Payday		= function(ply)
 		for k,v in player.Iterator() do
 			if v.NextPay and (v.NextPay > Time) then continue end
 			local Gain = math.Round(math.Clamp((MaxGain / 2) + ((v:GetNW2Int("Karma",0) / 100) * (MaxGain / 2)),0,MaxGain))
-			AAS.Funcs.ChargeRequisition(v,-Gain)
+
+			v:PayRequisition(Gain)
 
 			v.NextPay = Time + 60
 		end
 	else
 		if ply.NextPay and (ply.NextPay > Time) then return end
 		local Gain = math.Round(math.Clamp((MaxGain / 2) + ((ply:GetNW2Int("Karma",0) / 100) * (MaxGain / 2)),0,MaxGain))
-		AAS.Funcs.ChargeRequisition(ply,-Gain)
+
+		ply:PayRequisition(Gain)
 
 		ply.NextPay = Time + 60
 	end

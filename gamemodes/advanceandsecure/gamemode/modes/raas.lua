@@ -13,7 +13,7 @@ GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here.
 	AAS.Funcs.UpdateState()
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here, like placing points/spawns
+GMT.Load	= function(MapData) -- Assemble the map here
 	MsgN("========================== RAAS Start Generation")
 	local SpawnA, SpawnB
 	local AllPoints, PointList, InvPointList = {}, {}, {}
@@ -165,7 +165,6 @@ GMT.Load	= function(MapData) -- Assemble the map here, like placing points/spawn
 end
 
 GMT.Save	= function(MapData) -- Return false to abort saving for any reason
-
 	return true
 end
 

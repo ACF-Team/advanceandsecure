@@ -1,6 +1,7 @@
 MsgN("+ HUD system loaded")
 
 local PointBaseColor = Color(65,65,65)
+local nodeColor	= Color(200, 200, 200)
 
 local SW,SH = ScrW(),ScrH()
 --local SM = {x = SW / 2, y = SH / 2}
@@ -133,8 +134,10 @@ do
 
 		local Letter = {"A", "B", "C", "D", "E", "F", "G"}
 
-		local Zerp	= 0
-		local skymask	= MASK_SOLID_BRUSHONLY
+		local Zerp			= 0
+		local skymask		= MASK_SOLID_BRUSHONLY
+		local PointScale2D	= 4
+		local ResnodeScale	= 3
 		local function DoMinimap()
 			draw.NoTexture()
 
@@ -235,7 +238,7 @@ do
 			mapmatrix_norot:Scale(Vector(Zoom, Zoom, 0))
 			cam.PushModelMatrix(mapmatrix_norot)
 
-			do
+			do	-- North marker
 				surface.SetDrawColor(65, 65, 65, 255)
 
 				local LocPos = (TranslateToMinimap(LocalPlayer():GetPos() + Vector(0, 16384, 0)) / 16384) * (MapSize / 2)
@@ -249,26 +252,9 @@ do
 				draw.SimpleTextOutlined("N", "PixelFont", FinPos.x, FinPos.y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 			end
 
-			for k,v in ipairs(team.GetPlayers(LocalPlayer():Team())) do
-				if not IsValid(v) then continue end
-				local LocPos = (TranslateToMinimap(v:GetPos()) / 16384) * (MapSize / 2)
-
-				local Dir	= LocPos:GetNormalized()
-				local Mag	= math.min(ZoomScale * 2, LocPos:Length())
-				local NewPos	= Mag * Dir
-				local ClampedPos	= Vector(math.Clamp(NewPos.x, -ZoomScale, ZoomScale), math.Clamp(NewPos.y, -ZoomScale, ZoomScale), 0)
-				local FinPos = Vector(math.floor(ClampedPos.x), math.floor(ClampedPos.y), 0)
-
-				surface.SetDrawColor(0,0,0,255)
-				surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 4, 4, -EA.yaw)
-				surface.SetDrawColor(0,255,0,255)
-				surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 2, 2, -EA.yaw)
-			end
-
-			local CT = CurTime() * 30
-			if AAS.State.Alias then
-				for k,v in pairs(AAS.State.Alias) do
-					if (not IsValid(v)) or (v == NULL) then continue end
+			do	-- Team rendering
+				for k,v in ipairs(team.GetPlayers(LocalPlayer():Team())) do
+					if not IsValid(v) then continue end
 					local LocPos = (TranslateToMinimap(v:GetPos()) / 16384) * (MapSize / 2)
 
 					local Dir	= LocPos:GetNormalized()
@@ -278,10 +264,69 @@ do
 					local FinPos = Vector(math.floor(ClampedPos.x), math.floor(ClampedPos.y), 0)
 
 					surface.SetDrawColor(0,0,0,255)
-					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 4, 6, -EA.yaw + CT)
-					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 4, 6, -EA.yaw + CT + 90)
-					surface.SetDrawColor(v:GetCapColor())
-					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 3, 3, -EA.yaw + CT)
+					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 4, 4, -EA.yaw)
+					surface.SetDrawColor(0,255,0,255)
+					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 2, 2, -EA.yaw)
+				end
+			end
+
+			do	-- Resource node rendering
+				local nodes = ents.FindByClass("aas_resnode")
+
+				if next(nodes) then
+					for _,v in ipairs(nodes) do
+						if (not IsValid(v)) or (v == NULL) then continue end
+						local LocPos = (TranslateToMinimap(v:GetPos()) / 16384) * (MapSize / 2)
+
+						local Dir	= LocPos:GetNormalized()
+						local Mag	= math.min(ZoomScale * 2, LocPos:Length())
+						local NewPos	= Mag * Dir
+						local ClampedPos	= Vector(math.Clamp(NewPos.x, -ZoomScale, ZoomScale), math.Clamp(NewPos.y, -ZoomScale, ZoomScale), 0)
+						local FinPos = Vector(math.floor(ClampedPos.x), math.floor(ClampedPos.y), 0)
+
+						local Poly	= {}
+						local Poly2	= {}
+
+						for I = 1,3 do
+							local Ang = math.rad((120 * I) + 90)
+							Poly[I] = {x = FinPos.x + (math.cos(Ang) * ResnodeScale), y = FinPos.y + (math.sin(Ang) * ResnodeScale)}
+							Poly2[I] = {x = FinPos.x + (math.cos(Ang) * ResnodeScale * 0.7), y = FinPos.y + (math.sin(Ang) * ResnodeScale * 0.7)}
+						end
+
+						surface.SetDrawColor(0,0,0,255)
+						surface.DrawPoly(Poly)
+						surface.SetDrawColor(nodeColor)
+						surface.DrawPoly(Poly2)
+					end
+				end
+			end
+
+			do	-- Point rendering
+				if AAS.State.Alias then
+					for _, v in pairs(AAS.State.Alias) do
+						if (not IsValid(v)) or (v == NULL) then continue end
+						local LocPos = (TranslateToMinimap(v:GetPos()) / 16384) * (MapSize / 2)
+
+						local Dir	= LocPos:GetNormalized()
+						local Mag	= math.min(ZoomScale * 2, LocPos:Length())
+						local NewPos	= Mag * Dir
+						local ClampedPos	= Vector(math.Clamp(NewPos.x, -ZoomScale, ZoomScale), math.Clamp(NewPos.y, -ZoomScale, ZoomScale), 0)
+						local FinPos = Vector(math.floor(ClampedPos.x), math.floor(ClampedPos.y), 0)
+
+						local Poly	= {}
+						local Poly2	= {}
+
+						for I = 1,6 do
+							local Ang = math.rad(60 * I)
+							Poly[I] = {x = FinPos.x + (math.cos(Ang) * PointScale2D), y = FinPos.y + (math.sin(Ang) * PointScale2D)}
+							Poly2[I] = {x = FinPos.x + (math.cos(Ang) * PointScale2D * 0.8), y = FinPos.y + (math.sin(Ang) * PointScale2D * 0.8)}
+						end
+
+						surface.SetDrawColor(0,0,0,255)
+						surface.DrawPoly(Poly)
+						surface.SetDrawColor(v:GetCapColor())
+						surface.DrawPoly(Poly2)
+					end
 				end
 			end
 
@@ -320,7 +365,7 @@ do
 			surface.SetDrawColor(65, 65, 65)
 			surface.DrawRect(Flip and 8 or 4, 4, BarWidth, Size.h - 8)
 
-			local ReqPerc	= LP:GetNW2Int("Requisition", 0) / MaxReq
+			local ReqPerc	= LP:GetRequisition() / MaxReq
 			surface.SetDrawColor(0, 255, 0)
 			surface.DrawRect(Flip and 8 or 4, Size.h - 4, BarWidth, (-Size.h + 8) * ReqPerc)
 
@@ -332,7 +377,7 @@ do
 
 			local MaxStackSize	= Size.h - 0
 			local StackPos	= {x = (Flip and 8 or 4) + BarWidth / 2, y = MaxStackSize - math.Clamp(MaxStackSize * ReqPerc, 40, MaxStackSize - 4)}
-			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("Requisition", 0)), "BasicFont14", StackPos.x, StackPos.y, Color(0,255,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
+			draw.SimpleTextOutlined(tostring(LP:GetRequisition()), "BasicFont14", StackPos.x, StackPos.y, Color(0,255,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
 			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("UsedRequisition", 0)), "BasicFont14", StackPos.x, StackPos.y + 12, Color(200,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
 			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("AAS.LoadoutCost", 0)), "BasicFont14", StackPos.x, StackPos.y + 24, Color(255,100,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
 
@@ -452,7 +497,7 @@ do
 			DisableClipping(ClipState)
 		end
 
-		local PointScale = 12
+		local PointScale = 14
 		-- Point markers, with progress diamonds
 		local function DoPoints()
 			draw.NoTexture()
@@ -486,10 +531,39 @@ do
 			end
 		end
 
+		local function DoResNodes()
+			draw.NoTexture()
+
+			local nodes = ents.FindByClass("aas_resnode")
+
+			local LP = LocalPlayer()
+			local PlyPos = LP:GetPos()
+
+			if next(nodes) then
+				for _, node in ipairs(nodes) do
+					local Pos = node:GetPos()
+					local Dist = PlyPos:DistToSqr(Pos)
+					local Dist2 = math.max(Dist - 20000,0)
+					local Pos2 = (Pos + Vector(0,0,96 + math.min(1200,Dist2 / 60000))):ToScreen()
+
+					local Poly = {}
+
+					for I = 1,3 do
+						local Ang = math.rad((120 * I) + 90)
+						Poly[I] = {x = Pos2.x + (math.cos(Ang) * PointScale), y = Pos2.y + (math.sin(Ang) * PointScale)}
+					end
+
+					surface.SetDrawColor(nodeColor)
+					surface.DrawPoly(Poly)
+				end
+			end
+		end
+
 		local function DoHUD()
 
 			surface.SetDrawColor(color_white)
 
+			DoResNodes()
 			DoPoints()
 			DoTeam()
 
@@ -510,6 +584,8 @@ do
 			if draw3DSkybox then return end
 
 			if AAS.Funcs.GetSetting("Non-linear", false) == true then return end
+			if AAS.GM.Flags["No connection"] then return end
+
 			if not AAS.State.FullLine then return end
 			for I = 2, #AAS.State.FullLine do
 				local P1 = AAS.State.FullLine[I - 1]

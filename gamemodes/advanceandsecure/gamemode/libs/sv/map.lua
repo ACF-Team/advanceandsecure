@@ -229,8 +229,6 @@ AAS.Funcs.LoadMap	= function(MapData)
 			end
 
 			v:SetCapture(0)
-
-			v:SetForceUpdate(not v:GetForceUpdate())
 		end
 
 		if not (IsValid(SpawnA) and IsValid(SpawnB)) then

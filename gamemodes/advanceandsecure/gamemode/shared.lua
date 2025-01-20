@@ -28,6 +28,7 @@ AddCSLuaFile("libs/cl/png.lua")
 includecs("libs/core.lua")			-- Basic stuff required for everything else
 includecs("libs/seatsystem.lua")	-- Seat entry/locking, to prevent cross team theft, as well as to allow easy entry without wire users
 includecs("libs/util.lua")			-- Miscellaneous
+includecs("libs/requisition.lua")	-- Requisition system, just unified
 includecs("libs/distro.lua")		-- Dupe/script distribution
 includecs("libs/vote.lua")			-- Vote system
 includecs("libs/settings.lua")		-- Settings

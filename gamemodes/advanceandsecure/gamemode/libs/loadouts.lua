@@ -156,7 +156,7 @@ if SERVER then
 		if IsValid(curwep) and (not Free) and curwep:GetPrimaryAmmoType() ~= -1 and curwepAmmoDiff > 0 then -- give ammo to max out this weapon only
 			local cost = math.ceil(AmmoCost(curwepAmmoDiff,curwep.Primary.Ammo))
 
-			local Pass = AAS.Funcs.ChargeRequisition(Ply,cost,"Refilling (" .. curwep.PrintName .. ") ammo")
+			local Pass = Ply:ChargeRequisition(cost, "Refilling (" .. curwep.PrintName .. ") ammo")
 			if Pass then
 				if not Quiet then aasMsg({Colors.BasicCol,"(" .. curwep.PrintName .. ") has been refilled. Press E again to refill everything!"},Ply) end
 				Ply:GiveAmmo(curwepAmmoDiff,curwep.Primary.Ammo)
@@ -184,7 +184,7 @@ if SERVER then
 			cost = math.ceil(cost)
 
 			if cost ~= 0 then
-				local Pass = AAS.Funcs.ChargeRequisition(Ply,cost,"Refilling all ammo")
+				local Pass = Ply:ChargeRequisition(cost, "Refilling all ammo")
 				if Pass then
 					if not Quiet then aasMsg({Colors.BasicCol,"All of your ammo has been refilled."},Ply) end
 					for k,v in pairs(maxlist) do
@@ -204,6 +204,8 @@ if SERVER then
 		local WU = -12.5 -- Starting armor of 25 has no speed penalty, call it conditioning
 		local Movespeed = NewPlyManager.BaseMoveSpeed
 		local SWEPList = {}
+
+		table.insert(SWEPList, "weapon_physcannon")
 
 		if Loadout.Primary ~= "" then
 			local Wep = NewPlyManager.Weapons[Loadout.Primary]
@@ -320,7 +322,7 @@ if SERVER then
 
 		local LoadoutData = NewPlyManager.BuildLoadout(self.OldLoadout, self.PlayerLoadout)
 
-		local Pass = AAS.Funcs.ChargeRequisition(self,LoadoutData.cost, "Loadout cost")
+		local Pass = self:ChargeRequisition(LoadoutData.cost, "Loadout cost")
 
 		self:SetNW2Int("AAS.LoadoutCost", LoadoutData.cost or 0)
 
@@ -650,7 +652,7 @@ else
 			surface.DrawRect(0,0,w,h)
 
 			draw.SimpleText("COST: " .. self.Cost,"BasicFont14",4,21,Colors.White,TEXT_ALIGN_LEFT,TEXT_ALIGN_BOTTOM)
-			draw.SimpleText("CURRENT: " .. LP:GetNW2Int("Requisition",0),"BasicFont14",w / 2,21,Colors.White,TEXT_ALIGN_LEFT,TEXT_ALIGN_BOTTOM)
+			draw.SimpleText("CURRENT: " .. LP:GetRequisition(),"BasicFont14",w / 2,21,Colors.White,TEXT_ALIGN_LEFT,TEXT_ALIGN_BOTTOM)
 			draw.SimpleText("WEIGHT: " .. self.WU,"BasicFont14",4,57,Colors.White,TEXT_ALIGN_LEFT,TEXT_ALIGN_BOTTOM)
 			draw.SimpleText("MOVESPEED: " .. self.Movespeed,"BasicFont14",4,93,Colors.White,TEXT_ALIGN_LEFT,TEXT_ALIGN_BOTTOM)
 
@@ -660,7 +662,7 @@ else
 			surface.DrawRect(0,93,w,16)
 
 			surface.SetDrawColor(0,255,0,255)
-			surface.DrawRect(1,21,(w - 2) * (LP:GetNW2Int("Requisition",0) / MaxReq),14)
+			surface.DrawRect(1,21,(w - 2) * (LP:GetRequisition() / MaxReq),14)
 			surface.SetDrawColor(255,0,0,255)
 			surface.DrawRect(1,28,(w - 2) * (self.Cost / MaxReq),7)
 

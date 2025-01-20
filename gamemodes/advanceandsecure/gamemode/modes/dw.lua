@@ -17,19 +17,58 @@ GMT.Name	= "Diesel wars"
 GMT.Desc	= "Resource-based team deathmatch"
 
 -- Override the default settings for these, to allow much higher limits
+AAS.SettingsFuncs.Number(GMT, "Min Requisition", 50, 25, 200, "Minimum amount of requisition", 11) -- Game will try to keep this amount on a player during each payday; incentivizes resource packages
 AAS.SettingsFuncs.Number(GMT, "Max Requisition", 500, 50, 1000, "Maximum amount of accruable requisition", -10)
 AAS.SettingsFuncs.Number(GMT, "Max Rate", 25, 5, 50, "Rate of requisition per pay cycle", -9)
+AAS.SettingsFuncs.Flag(GMT,	"No connection")
 
 GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here, like placing points/spawns
-	-- Load resource nodes + settings
+local nodeVariables = { -- NWVars specific to nodes that should be saved/loaded
+	"ResourceInt",
+	"ResourceMax"
+}
+
+GMT.Load	= function(MapData) -- Assemble the map here
+	for _, node in ipairs(MapData.Nodes) do
+		local NewNode = ents.Create("aas_resnode")
+		NewNode:SetPos(node.pos)
+		NewNode:SetAngles(Angle(-90, 0, 0))
+		NewNode:Spawn()
+
+		NewNode:SetResourceInt(node.ResourceInt)
+		NewNode:SetResourceMax(node.ResourceMax)
+	end
 end
 
 GMT.Save	= function(MapData) -- Return false to abort saving for any reason
-	-- Save resource nodes + settings
+	MapData.Nodes = {}
+
+	local Nodes = ents.FindByClass("aas_resnode")
+
+	if next(Nodes) ~= nil then
+		for _, node in pairs(Nodes) do
+			local Pos = node:GetPos()
+			local NWVars = node:GetNetworkVars()
+
+			local nodeData	= {
+				pos = Vector(math.Round(Pos.x), math.Round(Pos.y), math.Round(Pos.z)),
+			}
+
+			for _, val in ipairs(nodeVariables) do
+				nodeData[val] = NWVars[val]
+			end
+
+			table.insert(MapData.Nodes, nodeData)
+		end
+	else
+		aasMsg({Colors.ErrorCol,"[AAS] No resource nodes detected! Aborting"})
+		return false
+	end
+
+	return true
 end
 
 GMT.TicketThink	= function() -- Called when the server is doing ticket changes
@@ -47,18 +86,23 @@ end
 -- We don't use karma for this gamemode, so replace the Payday function
 GMT.Payday		= function(ply)
 	local MaxGain = AAS.Funcs.GetSetting("Max Rate", 25)
+	local MinAmount	= AAS.Funcs.GetSetting("Min Requisition", 100)
 	local Time = SysTime()
 
 	if ply == nil then
 		for k,v in player.Iterator() do
 			if v.NextPay and (v.NextPay > Time) then continue end
-			AAS.Funcs.ChargeRequisition(v,-MaxGain)
+
+			local PlyReq = v:GetRequisition()
+			if PlyReq < MinAmount then v:PayRequisition(math.Clamp(MinAmount - PlyReq, 0, MaxGain)) end
 
 			v.NextPay = Time + 60
 		end
 	else
 		if ply.NextPay and (ply.NextPay > Time) then return end
-		AAS.Funcs.ChargeRequisition(ply,-MaxGain)
+
+		local PlyReq = ply:GetRequisition()
+		if PlyReq < MinAmount then ply:PayRequisition(math.Clamp(MinAmount - PlyReq, 0, MaxGain)) end
 
 		ply.NextPay = Time + 60
 	end

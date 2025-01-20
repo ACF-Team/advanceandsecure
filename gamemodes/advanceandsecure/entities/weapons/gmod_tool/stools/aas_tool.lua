@@ -29,6 +29,9 @@ TOOL.Information = {
 	{name = "info_5", op = 5, icon = "gui/info.png"},
 	{name = "prop_warning", op = 5, icon = "gui/info.png"},
 
+	{name = "left_6", op = 6, icon = "gui/lmb.png"},
+	{name = "info_6", op = 6, icon = "gui/info.png"},
+
 	{name = "right"}, -- Advances toolmode
 
 	{name = "open_settings", icon = "gui/r.png", icon2 = "gui/e.png"} -- Option menu
@@ -69,6 +72,9 @@ if CLIENT then
 	language.Add("tool.aas_tool.left_5", "[6] Convert to map prop")
 	language.Add("tool.aas_tool.info_5", "Converts the prop you are looking at into an AAS map prop, undamageable and unmoveable")
 	language.Add("tool.aas_tool.prop_warning", "Be wary of letting go, props will phase through the world if editmode is on")
+
+	language.Add("tool.aas_tool.left_6", "[7] Create resource node")
+	language.Add("tool.aas_tool.info_6", "Create a resource node")
 end
 
 --[[
@@ -79,6 +85,7 @@ end
 	4: Delete spawnpoints
 	5: Map props (not damageable, used for altering map in some manner)
 	6: Mode that can convert existing props into AAS props
+	7: Add resource node
 ]]--
 
 local Colors = {
@@ -200,6 +207,17 @@ local ToolFuncs = {
 
 		oldent:Remove()
 	end,
+	[7] = function(tool) -- Add map props
+		if CLIENT then return end
+
+		local ply = tool:GetOwner()
+		local prop = ents.Create("aas_resnode")
+
+		prop:SetPos(ply:GetEyeTrace().HitPos + Vector(0, 0, 120))
+		prop:SetAngles(Angle(0, 0, 0))
+
+		prop:Spawn()
+	end,
 }
 
 function TOOL:LeftClick()
@@ -224,7 +242,7 @@ function TOOL:RightClick()
 		self:SetStage(0)
 		if op == 1 then self.ManualLink = {} end -- Clears manual link on tool
 
-		if op == 5 then op = 0 else op = op + 1 end
+		if op == table.Count(ToolFuncs) - 1 then op = 0 else op = op + 1 end
 
 		self:SetOperation(op)
 	end
@@ -342,6 +360,7 @@ function TOOL:DrawToolScreen(w,h)
 		draw.SimpleText("Remove Spawn Points","ChatFont",w / 2,72,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
 		draw.SimpleText("Spawn Map Props","ChatFont",w / 2,96,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
 		draw.SimpleText("Convert Map Props","ChatFont",w / 2,120,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+		draw.SimpleText("Add Resource Nodes","ChatFont",w / 2,144,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
 	else
 		if op == 0 then
 			draw.SimpleText("Add Capture Points","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
@@ -383,6 +402,11 @@ function TOOL:DrawToolScreen(w,h)
 
 			local props = ents.FindByClass("aas_prop")
 			draw.SimpleText("AAS Props: " .. #props,"ChatFont",4,24,Colors.white)
+		elseif op == 6 then
+			draw.SimpleText("Add Resource Nodes","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+
+			local points = ents.FindByClass("aas_resnode")
+			draw.SimpleText("Resource Nodes: " .. #points,"ChatFont",4,24,Colors.white)
 		end
 	end
 end

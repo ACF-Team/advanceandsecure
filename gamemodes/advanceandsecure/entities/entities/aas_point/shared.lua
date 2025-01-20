@@ -28,9 +28,7 @@ function ENT:SetupDataTables()
 	self:NetworkVar("Bool", 0, "IsSpawn", {KeyName = "isspawn", Edit = {title = "Is spawn?", category = "Spawn", type = "Boolean", order = 2}})
 	self:NetworkVar("Int", 2, "TeamSpawn", {KeyName = "teamspawn", Edit = {title = "Spawn for who?", category = "Spawn", type = "Combo", order = 3, text = "A", values = {A = 1, B = 2}}})
 
-	self:NetworkVar("Bool", 1,"ForceUpdate")	-- Some network screwery, used to force the server to update all clients on state of the point, because doing it as they spawn is just not an option for some reason
-
-	self:NetworkVar("Bool", 2, "Locked")		-- Blocks capturing if locked (for invasion)
+	self:NetworkVar("Bool", 1, "Locked")		-- Blocks capturing if locked (for invasion)
 
 	if SERVER then
 		self:SetPointName(tostring(math.random(100000)))
@@ -38,11 +36,5 @@ function ENT:SetupDataTables()
 		self:SetIsSpawn(false)
 		self:SetCapture(0)
 		self:SetLocked(false)
-	end
-
-	if CLIENT then
-		self.InterpCapture = 0
-
-		self:NetworkVarNotify("ForceUpdate",function(ent,_,old,new) end)
 	end
 end
