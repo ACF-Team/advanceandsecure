@@ -275,8 +275,11 @@ do	-- Hookery
 
 	do	-- Other prevention
 		-- Prevents using toolguns outside of the player's spawn, EditMode bypasses this
-		AAS.Funcs.AddHook(DefaultMode,"CanTool",function(ply,trace) -- tool,button also available, but not needed
+		local ExplicitFilter = {}
+		ExplicitFilter["proper_clipping"] = true
+		AAS.Funcs.AddHook(DefaultMode,"CanTool",function(ply,trace,tool) -- tool,button also available, but not needed
 			if GetGlobalBool("EditMode",false) then return true end
+			if ExplicitFilter[tool] then return true end
 
 			if not (PlyInSafezone(ply,ply:GetPos()) and InSafezone(trace.HitPos)) then aasMsg({Colors.BadCol,"You can't use the toolgun outside of your safezone!"},ply) return false end
 
