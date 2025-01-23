@@ -36,6 +36,7 @@ includecs("libs/mapdraw.lua")		-- Map PNG saving/loading
 includecs("libs/levels.lua")		-- Silly leveling system
 
 if SERVER then
+	include("libs/sv/commands.lua")		-- A place to store anything for admin mod interaction (BAdmin, ULX if I ever get to that (and they open up the ULXTeams disabling))
 	include("libs/sv/modes.lua")	-- Gamemode control
 	include("libs/sv/map.lua")		-- Map control
 	include("libs/sv/costcalc.lua")	-- Cost calculation
