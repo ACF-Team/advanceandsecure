@@ -13,6 +13,8 @@ AAS.RequisitionCosts.CalcSingleFilter = {
 	acf_piledriver			= 5,
 	acf_rack				= 10,
 	acf_engine				= 1,
+	acf_gearbox				= 0,
+	acf_fueltank			= 0,
 	prop_physics			= 1,
 	acf_armor				= 1,
 	acf_gun					= 1,
@@ -20,10 +22,14 @@ AAS.RequisitionCosts.CalcSingleFilter = {
 	acf_radar				= 10,
 	gmod_wire_gate			= 1,
 	primitive_shape			= 1,
-	--acf_turret				= 1,
+	acf_turret				= 0,
 	acf_turret_motor		= 1,
 	acf_turret_gyro			= 1,
 	acf_turret_computer		= 1,
+	acf_baseplate			= 1,
+	acf_controller			= 0.75,
+	acf_crew				= 1,
+	acf_groundloader		= 1,
 }
 
 AAS.RequisitionCosts.ACFGunCost = { -- anything not on here costs 1
@@ -142,7 +148,7 @@ AAS.RequisitionCosts.SpecialModelFilter = { -- any missile rack not in here cost
 
 local CostFilter = {}
 CostFilter["acf_gun"] = function(E) return (AAS.RequisitionCosts.ACFGunCost[E.Class] or 1) * E.Caliber end
-CostFilter["acf_engine"] = function(E) return math.max(5,(E.PeakTorque / 160) + (E.PeakPower / 80)) end
+CostFilter["acf_engine"] = function(E) return math.max(5, (E.PeakTorque / 160) + (E.PeakPower / 80)) end
 CostFilter["acf_rack"] = function(E)
 	if AAS.RequisitionCosts.SpecialModelFilter[E:GetModel()] then
 		return AAS.RequisitionCosts.SpecialModelFilter[E:GetModel()]
@@ -175,13 +181,15 @@ end
 CostFilter["acf_turret_gyro"] = function(E)
 	return E.IsDual and 8 or 4
 end
-CostFilter["acf_turret_computer"] = function(E) return 5 end
+CostFilter["acf_turret_computer"] = function() return 5 end
+
+CostFilter["acf_groundloader"] = function() return 20 end
 
 local ArmorCalc = function(E)
 	local phys = E:GetPhysicsObject()
 
 	if IsValid(phys) then
-		return 0.1 + math.max(0.01,phys:GetMass() / 500)
+		return 0.1 + math.max(0.01, phys:GetMass() / 500)
 	else
 		return 1
 	end
@@ -191,15 +199,15 @@ CostFilter["acf_armor"] = ArmorCalc
 CostFilter["prop_physics"] = ArmorCalc
 CostFilter["primitive_shape"] = ArmorCalc
 CostFilter["gmod_wire_gate"] = ArmorCalc
+CostFilter["acf_baseplate"] = ArmorCalc
 
 local FilterList = {}
-for k,v in pairs(AAS.RequisitionCosts.CalcSingleFilter) do
-	table.insert(FilterList,k)
+for k in pairs(AAS.RequisitionCosts.CalcSingleFilter) do
+	table.insert(FilterList, k)
 end
 
 do
 	do	-- Functions
-
 		function AAS.Funcs.CalcCost(E)
 			local Class = E:GetClass()
 			if not AAS.RequisitionCosts.CalcSingleFilter[Class] then return 0 end
@@ -252,9 +260,9 @@ do
 				AAS.PlyReq[Owner] = (AAS.PlyReq[Owner] or 0) + Cost
 			end
 
-			for k,v in player.Iterator() do
+			for _, v in player.Iterator() do
 				AAS.PlyReq[v] = math.ceil(AAS.PlyReq[v] or 0)
-				v:SetNW2Int("UsedRequisition",AAS.PlyReq[v] or 0)
+				v:SetNW2Int("UsedRequisition", AAS.PlyReq[v] or 0)
 			end
 
 			NextReqCheck = ST() + 1
@@ -267,14 +275,14 @@ do
 			local Highest = 0
 			local EntCount = 0
 
-			for _,ent in pairs(Ents) do
+			for _, ent in pairs(Ents) do
 				local Class = ent:GetClass()
-				if not AAS.RequisitionCosts.CalcSingleFilter[Class] then continue end
+				--if not AAS.RequisitionCosts.CalcSingleFilter[Class] then continue end
 				local Cost = AAS.Funcs.CalcCost(ent)
 
-				if not CostBreakdown[ent:GetClass()] then CostBreakdown[ent:GetClass()] = 0 end
+				if not CostBreakdown[Class] then CostBreakdown[Class] = 0 end
 
-				CostBreakdown[ent:GetClass()] = CostBreakdown[ent:GetClass()] + Cost
+				CostBreakdown[Class] = CostBreakdown[Class] + Cost
 
 				if not DupeCenter then
 					DupeCenter = ent:GetPos()
@@ -285,39 +293,39 @@ do
 				end
 
 				EntCount = EntCount + 1
-
 				TotalCost = TotalCost + Cost
 			end
 
 			TotalCost = math.ceil(TotalCost)
-			DupeCenter = DupeCenter / EntCount
+			DupeCenter = DupeCenter and DupeCenter / EntCount or vector_origin
 
-			return TotalCost,CostBreakdown,DupeCenter,Highest
+			return TotalCost, CostBreakdown, DupeCenter, Highest
 		end
 	end
 
 	do	-- Hooks
-
 		-- This captures when a player spawns a dupe with Advanced Duplicator 2
 		-- This will check the cost of the vehicle and notify the player of that cost, and have a 10 second timer before that cost is deducted from the player
 		-- The player can remove it within those 10 seconds so the cost isn't deducted
 		-- There are two random entities picked from the dupe that get checked for existing before cost is applied
-		hook.Add("AdvDupe_FinishPasting","CheckDupe",function(Dupe) -- force the requisition calculator to run when a dupe is done pasting
+		hook.Add("AdvDupe_FinishPasting", "CheckDupe", function(Dupe) -- force the requisition calculator to run when a dupe is done pasting
 			local DupeEnts = Dupe[1].CreatedEntities
 			local Ply = Dupe[1].Player
-			local Cost,Breakdown,DupeCenter,Highest = AAS.Funcs.CalcSingleRequisition(DupeEnts)
+			if not IsValid(Ply) then return end
+
+			local Cost, Breakdown, DupeCenter, Highest = AAS.Funcs.CalcSingleRequisition(DupeEnts)
 
 			net.Start("AAS.CostPanel")
 				net.WriteVector(DupeCenter)
 				net.WriteTable(Breakdown)
-				net.WriteUInt(Cost,16)
-				net.WriteUInt(Highest,12)
+				net.WriteUInt(Cost, 16)
+				net.WriteUInt(Highest, 12)
 			net.Send(Ply)
 
 			AAS.Funcs.CalcRequisition()
 			if Cost > (AAS.Funcs.GetSetting("Max Requisition", 300) - Ply:GetNW2Int("UsedRequisition")) then
-				aasMsg({Colors.ErrorCol,"Not enough total requisiton to spawn!"},Ply)
-				if not GetGlobalBool("EditMode",false) then error("Not enough requisition!") end -- Doing this will instantly remove the pasted duplication
+				aasMsg({Colors.ErrorCol, "Not enough total requisition to spawn!"}, Ply)
+				if not GetGlobalBool("EditMode", false) then error("Not enough requisition!") end -- Doing this will instantly remove the pasted duplication
 			else
 				local CheckEnt = table.Random(DupeEnts)
 				while not IsValid(CheckEnt) do

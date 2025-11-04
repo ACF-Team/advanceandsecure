@@ -55,7 +55,7 @@ AAS.Funcs.GetTeamInfo	= function(index)
 end
 
 AAS.Funcs.GetSetting	= function(Index, Default)
-	if not AAS.GM.Settings[Index] then return Default end
+	if not AAS.GM.Settings or not AAS.GM.Settings[Index] then return Default end
 
 	return AAS.GM.Settings[Index].value
 end
