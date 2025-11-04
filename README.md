@@ -1,7 +1,6 @@
 # Advance and Secure
 > Fully fledged Garry's Mod gamemode that leans on ACF-3
 
-[![A&S Discord](https://img.shields.io/discord/1113662258950705235?label=A%26S%20Discord&style=flat-square)](https://discord.gg/YDP72rfNgD)
 [![ACF Discord](https://img.shields.io/discord/654142834030542878?label=ACF%20Discord&style=flat-square)](https://discord.gg/jgdzysxjST)
 [![Steam Group](https://img.shields.io/badge/ACF%20Official-Join%20Now!-informational?style=flat-square)](https://steamcommunity.com/groups/officialacf)
 [![Repository Size](https://img.shields.io/github/repo-size/ACF-Team/advanceandsecure?label=Repository%20Size&style=flat-square)](https://github.com/ACF-Team/advanceandsecure)
