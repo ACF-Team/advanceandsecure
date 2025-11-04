@@ -354,7 +354,7 @@ else
 			if MapData.png.done == true then break end
 			local index = MapData.pointer + i
 
-			local data	= MapData.decompressed[index] or 0
+			local data	= MapData.decompressed and MapData.decompressed[index] or 0
 
 			local color	= Color(0, 0, 0, 0)
 			if data ~= 0 then

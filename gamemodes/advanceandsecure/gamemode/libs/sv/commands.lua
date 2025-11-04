@@ -56,9 +56,13 @@ do	-- ConCommands
 			MsgN("===== [AAS STATUS] =====")
 
 			MsgN("Editmode is currently: " .. (GetGlobalBool("EditMode",false) and "ACTIVE" or "INACTIVE"))
+
+			MsgN("=== GAME ===")
+
 			MsgN("Game is currently: " .. (AAS.State.Active and "RUNNING" or "HALTED"))
 			MsgN("Gamemode is: " .. AAS.State.Mode)
 			MsgN("Ticket balance is: " .. ("BLUFOR: " .. AAS.State.Team.BLUFOR.Tickets) .. " | " .. ("OPFOR: " .. AAS.State.Team.OPFOR.Tickets))
+			MsgN("BLUFOR Score: " .. team.GetScore(1) .. " | OPFOR Score: " .. team.GetScore(2))
 
 			MsgN("===== [END STATUS] =====")
 		end
