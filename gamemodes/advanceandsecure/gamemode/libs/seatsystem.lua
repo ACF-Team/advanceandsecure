@@ -18,7 +18,7 @@ if CLIENT then
 	SobelMat:SetTexture("$fbtexture", render.GetScreenEffectTexture())
 	SobelMat:SetFloat("$threshold", 0.00001)
 
-	local SW,SH = ScrW(),ScrH()
+	local SW, SH = ScrW(), ScrH()
 	local SM = {x = SW / 2, y = SH / 2}
 	local UU = ((SW > SH) and SH or SW) / 12
 
@@ -35,7 +35,7 @@ if CLIENT then
 		local Pos = EyePos()
 		local EyeDir = EyeVector()
 
-		for _,Ent in ipairs(Seats) do
+		for _, Ent in ipairs(Seats) do
 			if IsValid(Ent) and (Ent:GetPos():DistToSqr(EyePos()) < SeatMan.MaxDistance) then
 				local SeatDir = (Ent:LocalToWorld(Ent:OBBCenter()) - Pos):GetNormalized()
 				local SeatDot = SeatDir:Dot(EyeDir)
@@ -90,30 +90,30 @@ if CLIENT then
 		end
 	end)
 
-	local Base	= Color(75,75,75)
-	local Bar	= Color(65,200,65)
+	local Base	= Color(75, 75, 75)
+	local Bar	= Color(65, 200, 65)
 	hook.Add("HUDPaint", "AAS_SeatSystem", function()
 		if not (Holding or Check) then return end
 
 		if Holding and not Check then
-			local PercTime = math.Clamp((CurTime() - HoldTime) / Time,0,1)
+			local PercTime = math.Clamp((CurTime() - HoldTime) / Time, 0, 1)
 
 			surface.SetDrawColor(Base)
-			surface.DrawRect(SM.x - (UU * 1.4 / 2),SM.y + UU, UU * 1.4, 24)
+			surface.DrawRect(SM.x - (UU * 1.4 / 2), SM.y + UU, UU * 1.4, 24)
 
 			surface.SetDrawColor(Bar)
-			surface.DrawRect(SM.x - (UU * 1.4 / 2) + 2,SM.y + UU + 2, ((UU * 1.4) - 4) * PercTime, 20)
+			surface.DrawRect(SM.x - (UU * 1.4 / 2) + 2, SM.y + UU + 2, ((UU * 1.4) - 4) * PercTime, 20)
 
-			draw.SimpleTextOutlined("Remote enter seat","BasicFontLarge",SM.x, SM.y + UU + 12,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,color_black)
+			draw.SimpleTextOutlined("Remote enter seat", "BasicFontLarge", SM.x, SM.y + UU + 12, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 		elseif Check then
 			surface.SetDrawColor(Base)
 
 			if IsValid(BestChoice) then
-				surface.DrawRect(SM.x - (UU * 1.85 / 2),SM.y + UU, UU * 1.85, 24)
-				draw.SimpleTextOutlined("Release to enter this seat","BasicFontLarge",SM.x, SM.y + UU + 12,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,color_black)
+				surface.DrawRect(SM.x - (UU * 1.85 / 2), SM.y + UU, UU * 1.85, 24)
+				draw.SimpleTextOutlined("Release to enter this seat", "BasicFontLarge", SM.x, SM.y + UU + 12, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 			else
-				surface.DrawRect(SM.x - (UU * 1.35 / 2),SM.y + UU, UU * 1.35, 24)
-				draw.SimpleTextOutlined("Release to cancel","BasicFontLarge",SM.x, SM.y + UU + 12,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,color_black)
+				surface.DrawRect(SM.x - (UU * 1.35 / 2), SM.y + UU, UU * 1.35, 24)
+				draw.SimpleTextOutlined("Release to cancel", "BasicFontLarge", SM.x, SM.y + UU + 12, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 			end
 		end
 	end)
@@ -128,7 +128,7 @@ if CLIENT then
 		render.SetStencilZFailOperation( STENCIL_KEEP )
 	end
 
-	local GreenVec = Vector(0,255,0)
+	local GreenVec = Vector(0, 255, 0)
 	local function RenderOverlay(Entity, Highlight)
 		cam.Start3D()
 			render.ClearStencil()
@@ -147,39 +147,39 @@ if CLIENT then
 			local ECol = Entity:GetColor()
 			cam.Start2D()
 				if Highlight then
-					Col = LerpVector(TimedCos(0.75,0,1,0) + 0.5,GreenVec,Vector(ECol.r, ECol.g, ECol.b))
+					Col = LerpVector(TimedCos(0.75, 0, 1, 0) + 0.5, GreenVec, Vector(ECol.r, ECol.g, ECol.b))
 
 					surface.SetDrawColor(Col.r, Col.g, Col.b) -- Draw back over it with color, above 0 but below the model
 				else
 					surface.SetDrawColor(ECol.r, ECol.g, ECol.b)
 				end
 
-				surface.DrawRect(0,0,SW,SH)
+				surface.DrawRect(0, 0, SW, SH)
 			cam.End2D()
 
 			render.SetStencilEnable(false)
 		cam.End3D()
 	end
 
-	local Red = Color(255,0,0)
-	hook.Add("PostDrawEffects","AAS_SeatSystem",function()
+	local Red = Color(255, 0, 0)
+	hook.Add("PostDrawEffects", "AAS_SeatSystem", function()
 		if not Check then return end
 		ResetStencil()
 
-		for ind,Ent in ipairs(Seats) do
+		for ind, Ent in ipairs(Seats) do
 			if (not IsValid(Ent)) or (Ent == NULL) then table.remove(Seats, ind) continue end
 
 			if (Ent:GetPos():DistToSqr(EyePos()) < SeatMan.MaxDistance) and (Ent ~= BestChoice) then
-				RenderOverlay(Ent,false)
+				RenderOverlay(Ent, false)
 			end
 		end
 
 		if IsValid(BestChoice) then
-			RenderOverlay(BestChoice,true)
+			RenderOverlay(BestChoice, true)
 
 			cam.Start3D()
 				render.SetColorMaterial()
-				render.DrawWireframeSphere(BestChoice:LocalToWorld(BestChoice:OBBCenter()), BestChoice:BoundingRadius() * (1 + (TimedCos(0.75,0,1,0) * -0.125)), 8, 8, Red, false)
+				render.DrawWireframeSphere(BestChoice:LocalToWorld(BestChoice:OBBCenter()), BestChoice:BoundingRadius() * (1 + (TimedCos(0.75, 0, 1, 0) * -0.125)), 8, 8, Red, false)
 			cam.End3D()
 		end
 
@@ -195,10 +195,10 @@ else
 	function SeatMan.SeatsByTeam(Team)
 		local SeatList	= {}
 
-		for ply,seats in pairs(SeatMan.Seats) do
+		for ply, seats in pairs(SeatMan.Seats) do
 			if not IsValid(ply) then continue end
 
-			for seat,plyTeam in pairs(seats) do
+			for seat, plyTeam in pairs(seats) do
 				if IsValid(seat) and (plyTeam == Team) then
 					table.insert(SeatList, seat)
 				end
@@ -216,7 +216,7 @@ else
 		SeatMan.SeatOwnedBy[Seat] = Ply
 	end
 
-	net.Receive("aas_requestSeats",function(_,Ply)
+	net.Receive("aas_requestSeats", function(_, Ply)
 		net.Start("aas_requestSeats")
 			net.WriteTable(SeatMan.SeatsByTeam(Ply:Team()), true)
 		net.Send(Ply)
@@ -226,15 +226,21 @@ else
 		SeatMan.AddSeat(Ply, Seat)
 	end)
 
-	net.Receive("aas_requestEnterSeat",function(_,Ply)
+	net.Receive("aas_requestEnterSeat", function(_, Ply)
 		local Seat = net.ReadEntity()
 
 		if not IsValid(Seat) then return end
-		if (Seat:GetPos():DistToSqr(Ply:GetShootPos()) > (SeatMan.MaxDistance * 1.05)) then return end
-		if SeatMan.SeatOwnedBy[Seat]:Team() ~= Ply:Team() then return end
 
-		if IsValid(Seat:GetDriver()) and (SeatMan.SeatOwnedBy[Seat] == Ply) and (Seat:GetDriver() ~= Ply) then -- Give the seat owner priority to sit
-			Seat:GetDriver():ExitVehicle()
+		if (Seat:GetPos():DistToSqr(Ply:GetShootPos()) > (SeatMan.MaxDistance * 1.05)) then return end	-- Respect the max range, but allow a tiny leeway incase of latency
+
+		if SeatMan.SeatOwnedBy[Seat]:Team() ~= Ply:Team() then return end	-- Its an enemy player's seat, don't allow this to work
+
+		if IsValid(Seat:GetDriver()) then
+			if SeatMan.SeatOwnedBy[Seat] ~= Ply then return end
+
+			if Seat:GetDriver() ~= Ply then -- Give the seat owner priority to sit
+				Seat:GetDriver():ExitVehicle()
+			end
 		end
 
 		Ply:EnterVehicle(Seat)
