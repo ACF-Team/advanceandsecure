@@ -89,23 +89,23 @@ end
 ]]--
 
 local Colors = {
-	red = Color(255,0,0),
-	green = Color(0,255,0),
-	black = Color(0,0,0),
-	white = Color(255,255,255)
+	red = Color(255, 0, 0),
+	green = Color(0, 255, 0),
+	black = Color(0, 0, 0),
+	white = Color(255, 255, 255)
 }
 
 function TOOL:CanUseTool()
 	local owner = self:GetOwner()
 
-	if not owner:IsSuperAdmin() then if CLIENT then chat.AddText(Colors.red,"You aren't allowed to use this tool!") end return false end
-	if GetGlobalBool("EditMode",false) == false then if CLIENT then chat.AddText(Colors.red,"Edit mode is not enabled!") end return false end
+	if not owner:IsSuperAdmin() then if CLIENT then chat.AddText(Colors.red, "You aren't allowed to use this tool!") end return false end
+	if GetGlobalBool("EditMode", false) == false then if CLIENT then chat.AddText(Colors.red, "Edit mode is not enabled!") end return false end
 
 	return true
 end
 
 function TOOL:Allowed()
-	return self:GetOwner():IsSuperAdmin() and (GetGlobalBool("EditMode",false) == true)
+	return self:GetOwner():IsSuperAdmin() and (GetGlobalBool("EditMode", false) == true)
 end
 
 local ToolFuncs = {
@@ -114,8 +114,8 @@ local ToolFuncs = {
 
 		local ply = tool:GetOwner()
 		local point = ents.Create("aas_point")
-		point:SetPos(ply:GetEyeTrace().HitPos - Vector(0,0,12))
-		point:SetAngles(Angle(0,math.Round(ply:EyeAngles().y / 45) * 45,0))
+		point:SetPos(ply:GetEyeTrace().HitPos - Vector(0, 0, 12))
+		point:SetAngles(Angle(0, math.Round(ply:EyeAngles().y / 45) * 45, 0))
 		point:Spawn()
 	end,
 	[2] = function(tool) -- Link points (AAS)
@@ -128,26 +128,26 @@ local ToolFuncs = {
 
 		if stage == 0 then
 			if ent:GetIsSpawn() == true and ent:GetTeamSpawn() == 1 then
-				if CLIENT then chat.AddText(Colors.white,"Now, click on all of the points leading to SpawnB, and finish with SpawnB.") end
+				if CLIENT then chat.AddText(Colors.white, "Now, click on all of the points leading to SpawnB, and finish with SpawnB.") end
 				tool.ManualLink[1] = ent
 				tool:SetStage(1)
 			else
-				if CLIENT then chat.AddText(Colors.red,"This isn't the correct starting point!") end
+				if CLIENT then chat.AddText(Colors.red, "This isn't the correct starting point!") end
 			end
 		elseif stage == 1 then
 			if not (ent:GetIsSpawn() == true and ent:GetTeamSpawn() == 2) then
-				for k,v in ipairs(tool.ManualLink) do
-					if ent == v then if CLIENT then chat.AddText(Colors.red,"This point is already in the list!") end return end
+				for _, v in ipairs(tool.ManualLink) do
+					if ent == v then if CLIENT then chat.AddText(Colors.red, "This point is already in the list!") end return end
 				end
 			end
 
 			if ent:GetIsSpawn() == true and ent:GetTeamSpawn() == 2 then
-				if CLIENT then chat.AddText(Colors.white,"Manually linked points are now setup!") end
+				if CLIENT then chat.AddText(Colors.white, "Manually linked points are now setup!") end
 				tool.ManualLink[#tool.ManualLink + 1] = ent
 
 				if SERVER then
 					AAS.State.Data["Line"] = {}
-					for k,v in ipairs(tool.ManualLink) do
+					for k, v in ipairs(tool.ManualLink) do
 						AAS.State.Data["Line"][k] = v:GetPointName()
 					end
 				end
@@ -155,7 +155,7 @@ local ToolFuncs = {
 				tool.ManualLink = {}
 				tool:SetStage(0)
 			else
-				if CLIENT then chat.AddText(Colors.white,"Added " .. ent:GetPointName()) end
+				if CLIENT then chat.AddText(Colors.white, "Added " .. ent:GetPointName()) end
 				tool.ManualLink[#tool.ManualLink + 1] = ent
 			end
 		end
@@ -165,8 +165,8 @@ local ToolFuncs = {
 
 		local ply = tool:GetOwner()
 		local point = ents.Create("aas_spawnpoint")
-		point:SetPos(ply:GetEyeTrace().HitPos + Vector(0,0,12))
-		point:SetAngles(Angle(0,math.Round(ply:EyeAngles().y / 45) * 45,0))
+		point:SetPos(ply:GetEyeTrace().HitPos + Vector(0, 0, 12))
+		point:SetAngles(Angle(0, math.Round(ply:EyeAngles().y / 45) * 45, 0))
 		point:Spawn()
 	end,
 	[4] = function(tool) -- Delete spawnpoints
@@ -174,8 +174,8 @@ local ToolFuncs = {
 
 		local ply = tool:GetOwner()
 		local pos = ply:GetEyeTrace().HitPos
-		local entlist = ents.FindInBox(pos - Vector(64,64,32),pos + Vector(64,64,128))
-		for k,v in ipairs(entlist) do
+		local entlist = ents.FindInBox(pos - Vector(64, 64, 32), pos + Vector(64, 64, 128))
+		for _, v in ipairs(entlist) do
 			if v:GetClass() == "aas_spawnpoint" then v:Remove() end
 		end
 	end,
@@ -185,7 +185,7 @@ local ToolFuncs = {
 		local ply = tool:GetOwner()
 		local prop = ents.Create("aas_prop")
 		prop:SetPos(ply:GetEyeTrace().HitPos)
-		prop:SetAngles(Angle(0,ply:EyeAngles().y,0))
+		prop:SetAngles(Angle(0, ply:EyeAngles().y, 0))
 		prop:Spawn()
 		prop:SetModel(tool.PropModel)
 	end,
@@ -226,7 +226,7 @@ function TOOL:LeftClick()
 
 	local op = self:GetOperation()
 
-	local pass,varg = pcall(ToolFuncs[op + 1],self)
+	local pass, varg = pcall(ToolFuncs[op + 1], self)
 	if not pass then print(varg) end
 
 	return true
@@ -265,12 +265,12 @@ function TOOL:Reload()
 		return
 	elseif op == 1 then
 		if stage > 0 then
-			if SERVER then aasMsg({Colors.white,"Cleared the manual link list on the tool."}) end
+			if SERVER then aasMsg({Colors.white, "Cleared the manual link list on the tool."}) end
 			self:SetStage(0)
 			self.ManualLink = {}
 		else
 			if SERVER then
-				aasMsg({Colors.white,"Cleared the manual link list on the map."})
+				aasMsg({Colors.white, "Cleared the manual link list on the map."})
 				if AAS.State.Data["Line"] then AAS.State.Data["Line"] = nil end
 			end
 		end
@@ -279,39 +279,39 @@ function TOOL:Reload()
 		local points = ents.FindByClass("aas_point")
 		local spawns = ents.FindByClass("aas_spawnpoint")
 
-		for k,v in ipairs(spawns) do v:Remove() end
+		for _, v in ipairs(spawns) do v:Remove() end
 
-		local SpawnA,SpawnB
+		local SpawnA, SpawnB
 
-		for k,v in ipairs(points) do
+		for _, v in ipairs(points) do
 			if v:GetIsSpawn() then
 				if v:GetTeamSpawn() == 1 then SpawnA = v elseif v:GetTeamSpawn() == 2 then SpawnB = v end
 			end
 		end
 
-		for I = 1,8 do
+		for I = 1, 8 do
 			local Ang = math.rad(45 * I)
-			local Pos = SpawnA:GetPos() + Vector(math.cos(Ang) * 80,math.sin(Ang) * 80,64)
+			local Pos = SpawnA:GetPos() + Vector(math.cos(Ang) * 80, math.sin(Ang) * 80, 64)
 
 			local point = ents.Create("aas_spawnpoint")
 			point:SetPos(Pos)
-			point:SetAngles(Angle(0,45 * I,0))
+			point:SetAngles(Angle(0, 45 * I, 0))
 		end
 
-		for I = 1,8 do
+		for I = 1, 8 do
 			local Ang = math.rad(45 * I)
-			local Pos = SpawnB:GetPos() + Vector(math.cos(Ang) * 80,math.sin(Ang) * 80,64)
+			local Pos = SpawnB:GetPos() + Vector(math.cos(Ang) * 80, math.sin(Ang) * 80, 64)
 
 			local point = ents.Create("aas_spawnpoint")
 			point:SetPos(Pos)
-			point:SetAngles(Angle(0,45 * I,0))
+			point:SetAngles(Angle(0, 45 * I, 0))
 		end
 
 	elseif op == 3 then
 		if CLIENT then return true end
 		local spawns = ents.FindByClass("aas_spawnpoint")
 
-		for k,v in ipairs(spawns) do v:Remove() end
+		for _, v in ipairs(spawns) do v:Remove() end
 	elseif op == 4 then
 		if CLIENT then return true end
 
@@ -337,76 +337,76 @@ function TOOL:Holster()
 	self:SetStage(0)
 end
 
-function TOOL:DrawToolScreen(w,h)
-	if GetGlobalBool("EditMode",false) == false then
-		render.Clear(127,0,0,255)
-		draw.SimpleText("NOT IN EDIT MODE","ChatFont",w / 2,(h / 2) - 12,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("'aas_editmode 1'","ChatFont",w / 2,(h / 2) + 12,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+function TOOL:DrawToolScreen(w, h)
+	if GetGlobalBool("EditMode", false) == false then
+		render.Clear(127, 0, 0, 255)
+		draw.SimpleText("NOT IN EDIT MODE", "ChatFont", w / 2, (h / 2) - 12, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("'aas_editmode 1'", "ChatFont", w / 2, (h / 2) + 12, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 		return
 	end
 
-	render.Clear(0,0,0,255)
+	render.Clear(0, 0, 0, 255)
 	local op = self:GetOperation()
 	local owner = self:GetOwner()
 
 	local tr = owner:GetEyeTrace()
 
 	if SysTime() < (self.LastModeChange + 3) then
-		surface.SetDrawColor(Color(0,127,0))
-		surface.DrawRect(0,24 * op,w,24)
-		draw.SimpleText("Add Capture Points","ChatFont",w / 2,0,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Link Capture Points","ChatFont",w / 2,24,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Add Spawn Points","ChatFont",w / 2,48,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Remove Spawn Points","ChatFont",w / 2,72,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Spawn Map Props","ChatFont",w / 2,96,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Convert Map Props","ChatFont",w / 2,120,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Add Resource Nodes","ChatFont",w / 2,144,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+		surface.SetDrawColor(Color(0, 127, 0))
+		surface.DrawRect(0, 24 * op, w, 24)
+		draw.SimpleText("Add Capture Points", "ChatFont", w / 2, 0, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("Link Capture Points", "ChatFont", w / 2, 24, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("Add Spawn Points", "ChatFont", w / 2, 48, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("Remove Spawn Points", "ChatFont", w / 2, 72, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("Spawn Map Props", "ChatFont", w / 2, 96, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("Convert Map Props", "ChatFont", w / 2, 120, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+		draw.SimpleText("Add Resource Nodes", "ChatFont", w / 2, 144, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 	else
 		if op == 0 then
-			draw.SimpleText("Add Capture Points","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Add Capture Points", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			local points = ents.FindByClass("aas_point")
-			draw.SimpleText("Points: " .. #points,"ChatFont",4,24,Colors.white)
+			draw.SimpleText("Points: " .. #points, "ChatFont", 4, 24, Colors.white)
 
 			if IsValid(tr.Entity) and tr.Entity:GetClass() == "aas_point" then
 				local point = tr.Entity
-				draw.SimpleText("Name: " .. point:GetPointName(),"ChatFont",4,48,Colors.white)
+				draw.SimpleText("Name: " .. point:GetPointName(), "ChatFont", 4, 48, Colors.white)
 				local IsSpawn = point:GetIsSpawn()
 				if IsSpawn then
-					draw.SimpleText("Team Spawn for: " .. point:GetTeamSpawn(),"ChatFont",4,72,Colors.white)
+					draw.SimpleText("Team Spawn for: " .. point:GetTeamSpawn(), "ChatFont", 4, 72, Colors.white)
 				end
 			end
 		elseif op == 1 then
-			draw.SimpleText("Link Capture Points","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Link Capture Points", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
-			for k,v in ipairs(self.ManualLink) do
+			for k, v in ipairs(self.ManualLink) do
 				if not IsValid(v) then continue end
-				draw.SimpleText(v:GetPointName(),"ChatFont",4,24 + ((k-1) * 24),Colors.white,TEXT_ALIGN_LEFT,TEXT_ALIGN_TOP)
+				draw.SimpleText(v:GetPointName(), "ChatFont", 4, 24 + ((k-1) * 24), Colors.white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 			end
 		elseif op == 2 then
-			draw.SimpleText("Add Spawn Points","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Add Spawn Points", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
 			local points = ents.FindByClass("aas_spawnpoint")
-			draw.SimpleText("Spawnpoints: " .. #points,"ChatFont",4,24,Colors.white)
+			draw.SimpleText("Spawnpoints: " .. #points, "ChatFont", 4, 24, Colors.white)
 		elseif op == 3 then
-			draw.SimpleText("Remove Spawn Points","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Remove Spawn Points", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
 			local points = ents.FindByClass("aas_spawnpoint")
-			draw.SimpleText("Spawnpoints: " .. #points,"ChatFont",4,24,Colors.white)
+			draw.SimpleText("Spawnpoints: " .. #points, "ChatFont", 4, 24, Colors.white)
 		elseif op == 4 then
-			draw.SimpleText("Spawn Map Props","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Spawn Map Props", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
 			local props = ents.FindByClass("aas_prop")
-			draw.SimpleText("AAS Props: " .. #props,"ChatFont",4,24,Colors.white)
+			draw.SimpleText("AAS Props: " .. #props, "ChatFont", 4, 24, Colors.white)
 		elseif op == 5 then
-			draw.SimpleText("Convert Map Props","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Convert Map Props", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
 			local props = ents.FindByClass("aas_prop")
-			draw.SimpleText("AAS Props: " .. #props,"ChatFont",4,24,Colors.white)
+			draw.SimpleText("AAS Props: " .. #props, "ChatFont", 4, 24, Colors.white)
 		elseif op == 6 then
-			draw.SimpleText("Add Resource Nodes","ChatFont",w / 2,4,Colors.white,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Add Resource Nodes", "ChatFont", w / 2, 4, Colors.white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
 			local points = ents.FindByClass("aas_resnode")
-			draw.SimpleText("Resource Nodes: " .. #points,"ChatFont",4,24,Colors.white)
+			draw.SimpleText("Resource Nodes: " .. #points, "ChatFont", 4, 24, Colors.white)
 		end
 	end
 end

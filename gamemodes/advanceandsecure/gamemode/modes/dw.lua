@@ -22,7 +22,7 @@ AAS.SettingsFuncs.Number(GMT, "Max Requisition", 500, 50, 1000, "Maximum amount 
 AAS.SettingsFuncs.Number(GMT, "Max Rate", 25, 5, 50, "Rate of requisition per pay cycle", -9)
 AAS.SettingsFuncs.Flag(GMT,	"No connection")
 
-GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
+GMT.Init	= function()	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
 end
 
@@ -64,7 +64,7 @@ GMT.Save	= function(MapData) -- Return false to abort saving for any reason
 			table.insert(MapData.Nodes, nodeData)
 		end
 	else
-		aasMsg({Colors.ErrorCol,"[AAS] No resource nodes detected! Aborting"})
+		aasMsg({Colors.ErrorCol, "[AAS] No resource nodes detected! Aborting"})
 		return false
 	end
 
@@ -90,7 +90,7 @@ GMT.Payday		= function(ply)
 	local Time = SysTime()
 
 	if ply == nil then
-		for k,v in player.Iterator() do
+		for _, v in player.Iterator() do
 			if v.NextPay and (v.NextPay > Time) then continue end
 
 			local PlyReq = v:GetRequisition()

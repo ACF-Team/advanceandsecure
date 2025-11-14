@@ -169,7 +169,7 @@ CostFilter["acf_ammo"] = function(E)
 	if E.AmmoType == "Refill" then
 		return E.Capacity * 0.05
 	elseif E.IsMissileAmmo then -- Only present on crates that actually hold ACF-3 Missiles ammo, courtesy of a hook intercept in ACF-3 Missiles
-		return E.Capacity * (AAS.RequisitionCosts.ACFAmmoModifier[E.AmmoType] or 0.2) * (AAS.RequisitionCosts.ACFMissileModifier[E.Class] or 10) * math.max(1,(E.Caliber / 100) ^ 1.5)
+		return E.Capacity * (AAS.RequisitionCosts.ACFAmmoModifier[E.AmmoType] or 0.2) * (AAS.RequisitionCosts.ACFMissileModifier[E.Class] or 10) * math.max(1, (E.Caliber / 100) ^ 1.5)
 	else
 		return E.Capacity * (AAS.RequisitionCosts.ACFAmmoModifier[E.AmmoType] or 0.2) * ((E.Caliber / 100) ^ 2) * (AAS.RequisitionCosts.ACFGunCost[E.Class] or 1)
 	end
@@ -227,30 +227,30 @@ do
 			local PlyEnts = {}
 
 			local PreFilterEnts = {}
-			for _,class in ipairs(FilterList) do
+			for _, class in ipairs(FilterList) do
 				local TempEnts = ents.FindByClass(class)
-				table.Add(PreFilterEnts,TempEnts)
+				table.Add(PreFilterEnts, TempEnts)
 			end
 
 			local World = game.GetWorld()
-			for _,ent in ipairs(PreFilterEnts) do
+			for _, ent in ipairs(PreFilterEnts) do
 				if ent:IsPlayerHolding() then continue end
 				if (ent:GetCreationTime() + 10.1) > CurTime() then continue end
 				local Owner = ent:CPPIGetOwner()
 				if Owner == nil then continue end
 				if (Owner ~= World) or false then
-					table.insert(Ents,ent)
+					table.insert(Ents, ent)
 					EntLookup[ent] = Owner
 
 					if not PlyEnts[Owner] then PlyEnts[Owner] = {} end
 
-					table.insert(PlyEnts[Owner],ent)
+					table.insert(PlyEnts[Owner], ent)
 				end
 			end
 
 			AAS.PlyReq = {}
 
-			for _,ent in ipairs(Ents) do
+			for _, ent in ipairs(Ents) do
 				local Class = ent:GetClass()
 				if not AAS.RequisitionCosts.CalcSingleFilter[Class] then continue end
 
@@ -336,10 +336,10 @@ do
 					SecondCheckEnt = table.Random(DupeEnts)
 				end
 
-				if GetGlobalBool("EditMode",false) == false then
-					aasMsg({Colors.BasicCol, "After 10 seconds this will cost you ", Color(255,127,127), tostring(Cost), Colors.BasicCol, " of your ", Colors.GoodCol, tostring(Ply:GetRequisition()), Colors.BasicCol, " requisition."}, Ply)
+				if GetGlobalBool("EditMode", false) == false then
+					aasMsg({Colors.BasicCol, "After 10 seconds this will cost you ", Color(255, 127, 127), tostring(Cost), Colors.BasicCol, " of your ", Colors.GoodCol, tostring(Ply:GetRequisition()), Colors.BasicCol, " requisition."}, Ply)
 
-					timer.Simple(10,function()
+					timer.Simple(10, function()
 						if not (IsValid(CheckEnt) or IsValid(SecondCheckEnt)) then return end
 
 						print("Charging " .. Ply:Nick() .. " for " .. Cost)
@@ -347,8 +347,8 @@ do
 						local CanAfford = Dupe[1].Player:ChargeRequisition(Cost, "Cost of dupe")
 
 						if not CanAfford then
-							aasMsg({Colors.ErrorCol,"You can't afford this dupe!"},Ply)
-							for k,v in pairs(Dupe[1].CreatedEntities) do
+							aasMsg({Colors.ErrorCol, "You can't afford this dupe!"}, Ply)
+							for _, v in pairs(Dupe[1].CreatedEntities) do
 								v:Remove()
 							end
 						end

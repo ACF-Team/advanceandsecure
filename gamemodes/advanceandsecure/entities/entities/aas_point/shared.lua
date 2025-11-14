@@ -11,12 +11,12 @@ ENT.AdminOnly = true
 
 ENT.Editable = true
 
-function ENT:CanTool(ply)
-	return GetGlobalBool("EditMode",false)
+function ENT:CanTool()
+	return GetGlobalBool("EditMode", false)
 end
 
-function ENT:CanProperty(ply)
-	return GetGlobalBool("EditMode",false)
+function ENT:CanProperty()
+	return GetGlobalBool("EditMode", false)
 end
 
 function ENT:SetupDataTables()

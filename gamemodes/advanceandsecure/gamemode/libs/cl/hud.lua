@@ -1,9 +1,9 @@
 MsgN("+ HUD system loaded")
 
-local PointBaseColor = Color(65,65,65)
+local PointBaseColor = Color(65, 65, 65)
 local nodeColor	= Color(200, 200, 200)
 
-local SW,SH = ScrW(),ScrH()
+local SW, SH = ScrW(), ScrH()
 --local SM = {x = SW / 2, y = SH / 2}
 local UU = ((SW > SH) and SH or SW) / 12
 
@@ -13,15 +13,15 @@ local Padding	= {x = (UU * 0.25) + RequisitionPanelWidth, y = UU * 0.25}
 do
 	do	-- Point Change
 
-		local function PointChange(PointName,OldStatus,NewStatus)
+		local function PointChange(PointName, OldStatus, NewStatus)
 			if PointChangeBase then PointChangeBase:Remove() end
 
 			PointChangeBase = vgui.Create("Panel")
-			PointChangeBase:SetSize(UU * 8,UU * 2)
+			PointChangeBase:SetSize(UU * 8, UU * 2)
 			PointChangeBase:CenterHorizontal(0.5)
 			PointChangeBase:CenterVertical(0.25)
-			PointChangeBase:AlphaTo(0,1,4,function(_,panel) panel:Remove() end)
-			PointChangeBase.Paint = function(self,w,h)
+			PointChangeBase:AlphaTo(0, 1, 4, function(_, panel) panel:Remove() end)
+			PointChangeBase.Paint = function(_, w, h)
 				local CurrentTeam = LocalPlayer():Team()
 				draw.NoTexture()
 				local Col = PointBaseColor
@@ -32,9 +32,9 @@ do
 				end
 
 				local CapText = ""
-				local CapCol = Color(255,255,255)
+				local CapCol = Color(255, 255, 255)
 
-				local PolyCol = Color(65,65,65)
+				local PolyCol = Color(65, 65, 65)
 				if (NewStatus == 0) and (OldStatus ~= CurrentTeam) then
 					CapCol = Colors.GoodCol
 					CapText = "Neutralized"
@@ -47,22 +47,22 @@ do
 					CapText	= "Captured by " .. AAS.Funcs.GetTeamInfo(NewStatus).Name
 				end
 
-				local CX,CY = w / 2,h / 2
+				local CX, CY = w / 2, h / 2
 				local LowPoly = {
-					{x = CX,y = CY + UU * 0.6},
-					{x = CX - UU * 0.6,y = CY},
-					{x = CX - UU * 0.35,y = CY},
-					{x = CX,y = CY + UU * 0.35},
-					{x = CX + UU * 0.35,y = CY},
-					{x = CX + UU * 0.6,y = CY}
+					{x = CX, y = CY + UU * 0.6},
+					{x = CX - UU * 0.6, y = CY},
+					{x = CX - UU * 0.35, y = CY},
+					{x = CX, y = CY + UU * 0.35},
+					{x = CX + UU * 0.35, y = CY},
+					{x = CX + UU * 0.6, y = CY}
 				}
 				local HighPoly = {
-					{x = CX,y = CY - UU * 0.6},
-					{x = CX + UU * 0.6,y = CY},
-					{x = CX + UU * 0.35,y = CY},
-					{x = CX,y = CY - UU * 0.35},
-					{x = CX - UU * 0.35,y = CY},
-					{x = CX - UU * 0.6,y = CY}
+					{x = CX, y = CY - UU * 0.6},
+					{x = CX + UU * 0.6, y = CY},
+					{x = CX + UU * 0.35, y = CY},
+					{x = CX, y = CY - UU * 0.35},
+					{x = CX - UU * 0.35, y = CY},
+					{x = CX - UU * 0.6, y = CY}
 				}
 
 				surface.SetDrawColor(PolyCol)
@@ -71,13 +71,13 @@ do
 
 				--surface.SetDrawColor(Col)
 
-				draw.SimpleTextOutlined(PointName,"BasicFontLarge",CX - UU * 0.75,CY,color_white,TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER,1,color_black)
-				draw.SimpleTextOutlined(CapText,"BasicFontLarge",CX + UU * 0.75,CY,CapCol,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER,1,color_black)
+				draw.SimpleTextOutlined(PointName, "BasicFontLarge", CX - UU * 0.75, CY, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER, 1, color_black)
+				draw.SimpleTextOutlined(CapText, "BasicFontLarge", CX + UU * 0.75, CY, CapCol, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 1, color_black)
 			end
 		end
 
 		-- Handles any changes in point capture status
-		net.Receive("AAS.UpdatePointState",function() PointChange(net.ReadString(),net.ReadInt(3),net.ReadInt(3)) end)
+		net.Receive("AAS.UpdatePointState", function() PointChange(net.ReadString(), net.ReadInt(3), net.ReadInt(3)) end)
 	end
 
 	do	-- Main UI
@@ -95,7 +95,7 @@ do
 		local function TranslateToMinimap(WorldPos)
 			local EA, EP = EyeA(), EyeP()
 
-			local LocPos	= WorldToLocal(WorldPos * Vector(1,1,0), Angle(), EP * Vector(1,1,0), Angle(0, EA.y + 180, 0))
+			local LocPos	= WorldToLocal(WorldPos * Vector(1, 1, 0), Angle(), EP * Vector(1, 1, 0), Angle(0, EA.y + 180, 0))
 
 			return Vector(LocPos.y, LocPos.x, 0)
 		end
@@ -162,7 +162,7 @@ do
 			surface.DrawRect(0, 0, Size.w, Size.h)
 
 			local ClipState = DisableClipping(true)
-			surface.SetDrawColor(65,127,255)
+			surface.SetDrawColor(65, 127, 255)
 			surface.DrawOutlinedRect(0, 0, Size.w, Size.h, -4)
 
 			if AAS.State.ClientPointLine then
@@ -187,15 +187,15 @@ do
 			if AAS.State.Team["BLUFOR"] then
 				local NumTickets = AAS.Funcs.GetSetting("Tickets", 300)
 
-				surface.SetDrawColor(65,65,65,255)
+				surface.SetDrawColor(65, 65, 65, 255)
 				surface.DrawRect(UU * 0.05, UU * 0.4, Size.w * 0.45, UU * 0.1)
 				surface.DrawRect(Size.w - UU * 0.05, UU * 0.4, -Size.w * 0.45, UU * 0.1)
 
 				surface.SetDrawColor(Color(Team1C.r, Team1C.g, Team1C.b))
-				surface.DrawRect(UU * 0.05, UU * 0.4, Size.w * 0.45 * math.min(1,AAS.State.Team["BLUFOR"].Tickets / NumTickets), UU * 0.1)
+				surface.DrawRect(UU * 0.05, UU * 0.4, Size.w * 0.45 * math.min(1, AAS.State.Team["BLUFOR"].Tickets / NumTickets), UU * 0.1)
 
 				surface.SetDrawColor(Color(Team2C.r, Team2C.g, Team2C.b))
-				surface.DrawRect(Size.w - UU * 0.05, UU * 0.4, -Size.w * 0.45 * math.min(1,AAS.State.Team["OPFOR"].Tickets / NumTickets), UU * 0.1)
+				surface.DrawRect(Size.w - UU * 0.05, UU * 0.4, -Size.w * 0.45 * math.min(1, AAS.State.Team["OPFOR"].Tickets / NumTickets), UU * 0.1)
 
 				draw.SimpleTextOutlined(Team1.Name, "BasicFont14", UU * 0.05, UU * 0.4, Team1.Color, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, color_black)
 				draw.SimpleTextOutlined(tostring(AAS.State.Team["BLUFOR"].Tickets), "BasicFont14", UU * 0.05 + Size.w * 0.45, UU * 0.4, Team1.Color, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 1, color_black)
@@ -218,7 +218,7 @@ do
 			local MapFinPos = Vector(math.floor(MapLocPos.x), math.floor(MapLocPos.y), 0)
 
 			surface.SetMaterial(NoMat)
-			surface.SetDrawColor(65,65,65,255)
+			surface.SetDrawColor(65, 65, 65, 255)
 			surface.DrawTexturedRect(-MapFinPos.x - (MapSize / 2), MapFinPos.y - (MapSize / 2), MapSize, MapSize)
 
 			if AAS.ValidMap then
@@ -228,7 +228,7 @@ do
 				surface.DrawTexturedRect(-MapFinPos.x - (MapSize / 2), MapFinPos.y - (MapSize / 2), MapSize, MapSize)
 			end
 
-			surface.SetDrawColor(255,0,0)
+			surface.SetDrawColor(255, 0, 0)
 			surface.DrawOutlinedRect(-MapFinPos.x - (MapSize / 2), MapFinPos.y - (MapSize / 2), MapSize, MapSize, -2)
 
 			draw.NoTexture()
@@ -253,7 +253,7 @@ do
 			end
 
 			do	-- Team rendering
-				for k,v in ipairs(team.GetPlayers(LocalPlayer():Team())) do
+				for _, v in ipairs(team.GetPlayers(LocalPlayer():Team())) do
 					if not IsValid(v) then continue end
 					local LocPos = (TranslateToMinimap(v:GetPos()) / 16384) * (MapSize / 2)
 
@@ -263,9 +263,9 @@ do
 					local ClampedPos	= Vector(math.Clamp(NewPos.x, -ZoomScale, ZoomScale), math.Clamp(NewPos.y, -ZoomScale, ZoomScale), 0)
 					local FinPos = Vector(math.floor(ClampedPos.x), math.floor(ClampedPos.y), 0)
 
-					surface.SetDrawColor(0,0,0,255)
+					surface.SetDrawColor(0, 0, 0, 255)
 					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 4, 4, -EA.yaw)
-					surface.SetDrawColor(0,255,0,255)
+					surface.SetDrawColor(0, 255, 0, 255)
 					surface.DrawTexturedRectRotated(FinPos.x, FinPos.y, 2, 2, -EA.yaw)
 				end
 			end
@@ -274,7 +274,7 @@ do
 				local nodes = ents.FindByClass("aas_resnode")
 
 				if next(nodes) then
-					for _,v in ipairs(nodes) do
+					for _, v in ipairs(nodes) do
 						if (not IsValid(v)) or (v == NULL) then continue end
 						local LocPos = (TranslateToMinimap(v:GetPos()) / 16384) * (MapSize / 2)
 
@@ -287,13 +287,13 @@ do
 						local Poly	= {}
 						local Poly2	= {}
 
-						for I = 1,3 do
+						for I = 1, 3 do
 							local Ang = math.rad((120 * I) + 90)
 							Poly[I] = {x = FinPos.x + (math.cos(Ang) * ResnodeScale), y = FinPos.y + (math.sin(Ang) * ResnodeScale)}
 							Poly2[I] = {x = FinPos.x + (math.cos(Ang) * ResnodeScale * 0.7), y = FinPos.y + (math.sin(Ang) * ResnodeScale * 0.7)}
 						end
 
-						surface.SetDrawColor(0,0,0,255)
+						surface.SetDrawColor(0, 0, 0, 255)
 						surface.DrawPoly(Poly)
 						surface.SetDrawColor(nodeColor)
 						surface.DrawPoly(Poly2)
@@ -316,13 +316,13 @@ do
 						local Poly	= {}
 						local Poly2	= {}
 
-						for I = 1,6 do
+						for I = 1, 6 do
 							local Ang = math.rad(60 * I)
 							Poly[I] = {x = FinPos.x + (math.cos(Ang) * PointScale2D), y = FinPos.y + (math.sin(Ang) * PointScale2D)}
 							Poly2[I] = {x = FinPos.x + (math.cos(Ang) * PointScale2D * 0.8), y = FinPos.y + (math.sin(Ang) * PointScale2D * 0.8)}
 						end
 
-						surface.SetDrawColor(0,0,0,255)
+						surface.SetDrawColor(0, 0, 0, 255)
 						surface.DrawPoly(Poly)
 						surface.SetDrawColor(v:GetCapColor())
 						surface.DrawPoly(Poly2)
@@ -377,9 +377,9 @@ do
 
 			local MaxStackSize	= Size.h - 0
 			local StackPos	= {x = (Flip and 8 or 4) + BarWidth / 2, y = MaxStackSize - math.Clamp(MaxStackSize * ReqPerc, 40, MaxStackSize - 4)}
-			draw.SimpleTextOutlined(tostring(LP:GetRequisition()), "BasicFont14", StackPos.x, StackPos.y, Color(0,255,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
-			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("UsedRequisition", 0)), "BasicFont14", StackPos.x, StackPos.y + 12, Color(200,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
-			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("AAS.LoadoutCost", 0)), "BasicFont14", StackPos.x, StackPos.y + 24, Color(255,100,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
+			draw.SimpleTextOutlined(tostring(LP:GetRequisition()), "BasicFont14", StackPos.x, StackPos.y, Color(0, 255, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
+			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("UsedRequisition", 0)), "BasicFont14", StackPos.x, StackPos.y + 12, Color(200, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
+			draw.SimpleTextOutlined(tostring(LP:GetNW2Int("AAS.LoadoutCost", 0)), "BasicFont14", StackPos.x, StackPos.y + 24, Color(255, 100, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
 
 			cam.PopModelMatrix()
 			DisableClipping(ClipState)
@@ -400,7 +400,7 @@ do
 			local TC = team.GetColor(TN)
 			surface.SetDrawColor(Color(TC.r, TC.g, TC.b, 92))
 
-			for _,ply in ipairs(team.GetPlayers(TN)) do
+			for _, ply in ipairs(team.GetPlayers(TN)) do
 				if ply == LP then continue end
 				local SPos = LerpVector(0.75, ply:GetPos(), ply:GetShootPos()):ToScreen()
 				surface.DrawTexturedRectRotated(SPos.x, SPos.y, UU * 0.175, UU * 0.175, 45)
@@ -457,7 +457,7 @@ do
 
 		local function DoCompass()
 			draw.NoTexture()
-			surface.SetDrawColor(255,255,255,255)
+			surface.SetDrawColor(255, 255, 255, 255)
 
 			local Yaw = EyeA().yaw
 			local matrix = Matrix()
@@ -507,20 +507,20 @@ do
 			local LP = LocalPlayer()
 			local PlyPos = LP:GetPos()
 
-			for _,v in pairs(AAS.State.FullLine) do
+			for _, v in pairs(AAS.State.FullLine) do
 				if (not IsValid(v)) or (v == NULL) then continue end
 
 				local Pos = v:GetPos()
 				local Dist = PlyPos:DistToSqr(Pos)
-				local Dist2 = math.max(Dist - 20000,0)
-				local Pos2 = (Pos + Vector(0,0,256 + 32 + math.min(1200,Dist2 / 60000))):ToScreen()
+				local Dist2 = math.max(Dist - 20000, 0)
+				local Pos2 = (Pos + Vector(0, 0, 256 + 32 + math.min(1200, Dist2 / 60000))):ToScreen()
 
 				local PointName = v:GetPointName()
 				if AAS.LocalAlias[PointName] then PointName = AAS.LocalAlias[PointName] .. " Spawn" end
 
 				local Poly = {}
 
-				for I = 1,6 do
+				for I = 1, 6 do
 					local Ang = math.rad(60 * I)
 					Poly[I] = {x = Pos2.x + (math.cos(Ang) * PointScale), y = Pos2.y + (math.sin(Ang) * PointScale)}
 				end
@@ -543,12 +543,12 @@ do
 				for _, node in ipairs(nodes) do
 					local Pos = node:GetPos()
 					local Dist = PlyPos:DistToSqr(Pos)
-					local Dist2 = math.max(Dist - 20000,0)
-					local Pos2 = (Pos + Vector(0,0,96 + math.min(1200,Dist2 / 60000))):ToScreen()
+					local Dist2 = math.max(Dist - 20000, 0)
+					local Pos2 = (Pos + Vector(0, 0, 96 + math.min(1200, Dist2 / 60000))):ToScreen()
 
 					local Poly = {}
 
-					for I = 1,3 do
+					for I = 1, 3 do
 						local Ang = math.rad((120 * I) + 90)
 						Poly[I] = {x = Pos2.x + (math.cos(Ang) * PointScale), y = Pos2.y + (math.sin(Ang) * PointScale)}
 					end
@@ -580,7 +580,7 @@ do
 	end
 
 	do	-- 3D Rendering
-		local function DoPoints(drawDepth, drawSkybox, draw3DSkybox)
+		local function DoPoints(_, _, draw3DSkybox)
 			if draw3DSkybox then return end
 
 			if AAS.Funcs.GetSetting("Non-linear", false) == true then return end
@@ -599,7 +599,7 @@ do
 
 		local FriendlySpawnDist	= 2048 ^ 2
 		local EnemySpawnDist	= 8192 ^ 2
-		local function DoSafezones(drawDepth, drawSkybox, draw3DSkybox)
+		local function DoSafezones(_, _, draw3DSkybox)
 			if draw3DSkybox then return end
 
 			local LP	= LocalPlayer()
@@ -621,13 +621,13 @@ do
 			if IsValid(Spawn) and (EP:DistToSqr(SpawnPos) < FriendlySpawnDist) then
 				local TeamInfo	= AAS.Funcs.GetTeamInfo(TN)
 
-				render.DrawWireframeBox(SpawnPos,Angle(),AAS.SpawnBoundA,AAS.SpawnBoundB,color_white,false)
+				render.DrawWireframeBox(SpawnPos, Angle(), AAS.SpawnBoundA, AAS.SpawnBoundB, color_white, false)
 
-				local R,G,B = TeamInfo.Color:Unpack()
-				local BoxCol = Color(R,G,B,32)
+				local R, G, B = TeamInfo.Color:Unpack()
+				local BoxCol = Color(R, G, B, 32)
 
 				render.DrawBox(SpawnPos, Angle(), AAS.ExtendedBoundsA, AAS.ExtendedBoundsB, BoxCol)
-				render.DrawBox(SpawnPos, Angle(), AAS.ExtendedBoundsA * Vector(-1,1,1), AAS.ExtendedBoundsB * Vector(-1,1,1), BoxCol)
+				render.DrawBox(SpawnPos, Angle(), AAS.ExtendedBoundsA * Vector(-1, 1, 1), AAS.ExtendedBoundsB * Vector(-1, 1, 1), BoxCol)
 			end
 
 			if (OpSpawn == NULL) or (not IsValid(OpSpawn)) then return end
@@ -636,16 +636,16 @@ do
 				local TeamInfo	= AAS.Funcs.GetTeamInfo(OTN)
 				local R, G, B	= TeamInfo.Color:Unpack()
 
-				render.OverrideDepthEnable(true,true)
-				render.DrawBox(OpSpawn:GetPos(),Angle(),AAS.SpawnBoundA,AAS.SpawnBoundB, Color(R, G, B, 255))
+				render.OverrideDepthEnable(true, true)
+				render.DrawBox(OpSpawn:GetPos(), Angle(), AAS.SpawnBoundA, AAS.SpawnBoundB, Color(R, G, B, 255))
 
 				if OpSpawnDist < (EnemySpawnDist / 2) then
-					render.DrawBox(OpSpawn:GetPos(),Angle(),AAS.ExtendedBoundsA,AAS.ExtendedBoundsB, Color(R, G, B, 255))
+					render.DrawBox(OpSpawn:GetPos(), Angle(), AAS.ExtendedBoundsA, AAS.ExtendedBoundsB, Color(R, G, B, 255))
 				else
 					local Alpha = (1 - ((OpSpawnDist - (EnemySpawnDist / 2)) / (EnemySpawnDist / 2))) * 255
-					render.DrawBox(OpSpawn:GetPos(),Angle(),AAS.ExtendedBoundsA,AAS.ExtendedBoundsB, Color(R, G, B, Alpha))
+					render.DrawBox(OpSpawn:GetPos(), Angle(), AAS.ExtendedBoundsA, AAS.ExtendedBoundsB, Color(R, G, B, Alpha))
 				end
-				render.OverrideDepthEnable(false,false)
+				render.OverrideDepthEnable(false, false)
 			end
 		end
 
@@ -653,7 +653,7 @@ do
 			return HSVToColor(((CurTime() + Offset) * Mult) % 360, 1, 1)
 		end
 
-		local function DoEditMode(drawDepth, drawSkybox, draw3DSkybox)
+		local function DoEditMode(_, _, draw3DSkybox)
 			if draw3DSkybox then return end
 			render.SetColorMaterial()
 
@@ -661,11 +661,11 @@ do
 			for ind, spawn in ipairs(ents.FindByClass("aas_spawnpoint")) do
 				local Pos = spawn:GetPos()
 
-				render.DrawBox(Pos + Vector(0, 0, 36), spawn:GetAngles(), Vector(16,-16,-36), Vector(-16,16,36), TimeToColor(4, ind * 5))
+				render.DrawBox(Pos + Vector(0, 0, 36), spawn:GetAngles(), Vector(16, -16, -36), Vector(-16, 16, 36), TimeToColor(4, ind * 5))
 				render.DrawLine(Pos + Vector(0, 0, 36), Pos + Vector(0, 0, 36) + spawn:GetForward() * 36, color_white, true)
 			end
 
-			for ind, point in ipairs(ents.FindByClass("aas_point")) do
+			for _, point in ipairs(ents.FindByClass("aas_point")) do
 				local Pos = point:GetPos()
 				render.DrawLine(Pos, Pos + point:GetUp() * 256, color_white, true)
 			end
@@ -686,13 +686,13 @@ do
 
 		local HUDHide = {["CHudHealth"] = true, ["CHUDQuickInfo"] = true, ["CHudBattery"] = true, ["CHudChat"] = false}
 		-- Just hides HUD elements
-		hook.Add("HUDShouldDraw","HideHUD",function(label)
+		hook.Add("HUDShouldDraw", "HideHUD", function(label)
 			if HUDHide[label] then return false end
 		end)
 
 		-- Blanks out the screen when the player is dead, or fades it with red when below 25% health
 		-- While dead the player can see a time until they can respawn, a hint for the gamemode, and a warning if their karma is too low (extends respawn time)
-		hook.Add("PostDrawHUD","AAS.DeathUI",function()
+		hook.Add("PostDrawHUD", "AAS.DeathUI", function()
 			local LP = LocalPlayer()
 			if not IsValid(LP) then return end
 
@@ -700,26 +700,26 @@ do
 			draw.NoTexture()
 
 			if Health < 25 then
-				surface.SetDrawColor(255 * (Health / 25),0,0,255 * (1 - (Health / 25)))
-				surface.DrawRect(0,0,SW,SH)
+				surface.SetDrawColor(255 * (Health / 25), 0, 0, 255 * (1 - (Health / 25)))
+				surface.DrawRect(0, 0, SW, SH)
 
 				if not LP:Alive() then
-					local DeathTime = math.Round(LP:GetNW2Float("NextSpawn",CurTime()) - CurTime(),1)
+					local DeathTime = math.Round(LP:GetNW2Float("NextSpawn", CurTime()) - CurTime(), 1)
 
-					draw.SimpleText("YOU HAVE DIED","BasicFontExtraLarge",SW / 2, (SH / 2) - UU * 0.5,Colors.BadCol,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					draw.SimpleText("YOU HAVE DIED", "BasicFontExtraLarge", SW / 2, (SH / 2) - UU * 0.5, Colors.BadCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 					if DeathTime > 0 then
-						draw.SimpleText(DeathTime .. "s","BasicFontLarge",SW / 2, SH / 2,Colors.BadCol,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+						draw.SimpleText(DeathTime .. "s", "BasicFontLarge", SW / 2, SH / 2, Colors.BadCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					else
-						draw.SimpleText("Press space or click to spawn!","BasicFontLarge",SW / 2, SH / 2,Colors.GoodCol,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+						draw.SimpleText("Press space or click to spawn!", "BasicFontLarge", SW / 2, SH / 2, Colors.GoodCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					end
 
-					if LP:GetNW2Int("karma",0) < -10 then
-						draw.SimpleText("Your extended respawn time is due to your karma (" .. LP:GetNW2Int("karma",0) .. ")",
-						"BasicFontLarge",SW / 2, (SH / 2) + UU * 0.5,Colors.BadCol,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					if LP:GetNW2Int("karma", 0) < -10 then
+						draw.SimpleText("Your extended respawn time is due to your karma (" .. LP:GetNW2Int("karma", 0) .. ")",
+						"BasicFontLarge", SW / 2, (SH / 2) + UU * 0.5, Colors.BadCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					end
 
-					draw.DrawText(AAS.Funcs.getHint(),"BasicFontLarge",SW / 2, SH * 0.75,Colors.BasicCol,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					draw.DrawText(AAS.Funcs.getHint(), "BasicFontLarge", SW / 2, SH * 0.75, Colors.BasicCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 					return
 				end

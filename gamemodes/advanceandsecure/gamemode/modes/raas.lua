@@ -19,7 +19,7 @@ GMT.Load	= function(MapData) -- Assemble the map here
 	local AllPoints, PointList, InvPointList = {}, {}, {}
 
 	local NumPoints = 0
-	for point,alias in pairs(AAS.State.AliasLookup) do
+	for point, alias in pairs(AAS.State.AliasLookup) do
 		if point:GetIsSpawn() then
 			if point:GetTeamSpawn() == 1 then SpawnA = point else SpawnB = point end
 		else
@@ -148,7 +148,7 @@ GMT.Load	= function(MapData) -- Assemble the map here
 	end
 
 	AAS.State.LineLookup = {}
-	for k,v in ipairs(AAS.State.Data["Line"]) do
+	for k, v in ipairs(AAS.State.Data["Line"]) do
 		AAS.State.LineLookup[AAS.State.Alias[v] ] = k
 	end
 
@@ -174,7 +174,7 @@ GMT.TicketThink	= function() -- Called when the server is doing ticket changes
 	local Points = ents.FindByClass("aas_point")
 	local TotalPoints = #Points - 2 -- There are always atleast 2 points due to team spawns technically being points
 
-	if TotalPoints == 0 then AAS.Funcs.Stop() aasMsg({Colors.ErrorCol,"[AAS] Halting game due to no capturable points being available."}) end
+	if TotalPoints == 0 then AAS.Funcs.Stop() aasMsg({Colors.ErrorCol, "[AAS] Halting game due to no capturable points being available."}) end
 
 	for _, v in ipairs(Points) do
 		if v:GetIsSpawn() then continue end

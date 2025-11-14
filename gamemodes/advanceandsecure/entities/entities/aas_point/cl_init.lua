@@ -1,6 +1,6 @@
 include("shared.lua")
 
-local BaseColor         = Color(65,65,65)
+local BaseColor         = Color(65, 65, 65)
 local SegLength         = 9
 local RenderDistance    = 1536 ^ 2
 
@@ -48,8 +48,8 @@ local function DrawFlag(Pole, Pos, Ang, Col)
 
 	for I = 1, 9 do
 		local Droop = (1 - Mag) ^ 4
-		local Flap	= TimedCos(-4,0,1,I) * 1.5 * I
-		local CounterFlap	= TimedSin(-5,0,1,I) * 1.5 * I
+		local Flap	= TimedCos(-4, 0, 1, I) * 1.5 * I
+		local CounterFlap	= TimedSin(-5, 0, 1, I) * 1.5 * I
 
 		local P1 = LerpVector(Droop,
 			LastP1 + ((Ang:Right() * CounterFlap) * WindMag),
@@ -59,8 +59,8 @@ local function DrawFlag(Pole, Pos, Ang, Col)
 			LastP2 + (StartAng:Forward() * (-3 + (-I / 2) + (DroopShift * 2))) + (StartAng:Up() * (-1.75 + (-I / 4) + (Flap * 2 * WindMag))) + (StartAng:Right() * (0.75 + (DroopShift * 2) + (Flap * 4 * WindMag))))
 
 		LastAng	= Ang
-		Ang = Ang + Angle(TimedCos(1,0,2,I) * WindMag, TimedCos(2,0,2,I) * WindMag, TimedCos(4,0,1,I) * WindMag)
-		Ang = LerpAngle(0.1 * (1 - Mag), Ang, Angle(45,Ang.y,Ang.r))
+		Ang = Ang + Angle(TimedCos(1, 0, 2, I) * WindMag, TimedCos(2, 0, 2, I) * WindMag, TimedCos(4, 0, 1, I) * WindMag)
+		Ang = LerpAngle(0.1 * (1 - Mag), Ang, Angle(45, Ang.y, Ang.r))
 
 		DrawQuad(
 			LastP1 + (LastAng:Up() * 22),
@@ -105,7 +105,7 @@ function ENT:Draw()
 
 	render.DrawSphere(Pos + (Up * 256), 8, 8, 8, FlagCol)
 
-	SegDir = SegDir + Angle(0, (TimedCos(0.5,-4,4,Time) + 4) + TimedCos(0.0005,-600,600,Time), 0)
+	SegDir = SegDir + Angle(0, (TimedCos(0.5, -4, 4, Time) + 4) + TimedCos(0.0005, -600, 600, Time), 0)
 	if EyeDist > RenderDistance then
 
 		local P1 = Pos + (Up * Raise)
@@ -119,12 +119,12 @@ function ENT:Draw()
 		return
 	end
 
-	SegDir = SegDir + Angle(TimedCos(0.2,-2,2,Time) + 2, 0, TimedCos(0.24,-4,4,Time) + 4)
+	SegDir = SegDir + Angle(TimedCos(0.2, -2, 2, Time) + 2, 0, TimedCos(0.24, -4, 4, Time) + 4)
 
-	local SegPos = Pos + (Up * Raise) + (SegDir:Forward() * (12 + TimedCos(0.2,0,2,0) + ((Mag ^ 3) * 6)))
+	local SegPos = Pos + (Up * Raise) + (SegDir:Forward() * (12 + TimedCos(0.2, 0, 2, 0) + ((Mag ^ 3) * 6)))
 
-	render.DrawBeam(SegPos + (SegDir:Up() * 22) + ((SegDir:Forward() - SegDir:Up()) * 0.5), Pos + (SegDir:Forward() * 6) + Vector(0,0,250), 0.5, -2, 2, color_black)
-	render.DrawBeam(SegPos + (SegDir:Up() * -22) + ((SegDir:Forward() + SegDir:Up()) * 0.5), Pos  + (SegDir:Forward() * 6) + Vector(0,0,30), 0.5, -2, 2, color_black)
+	render.DrawBeam(SegPos + (SegDir:Up() * 22) + ((SegDir:Forward() - SegDir:Up()) * 0.5), Pos + (SegDir:Forward() * 6) + Vector(0, 0, 250), 0.5, -2, 2, color_black)
+	render.DrawBeam(SegPos + (SegDir:Up() * -22) + ((SegDir:Forward() + SegDir:Up()) * 0.5), Pos  + (SegDir:Forward() * 6) + Vector(0, 0, 30), 0.5, -2, 2, color_black)
 
 	DrawFlag(self, SegPos, SegDir, FlagCol)
 

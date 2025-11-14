@@ -12,7 +12,7 @@ function AAS.Funcs.AdjustKarma(Ply, Amount)
 	Ply:SetNW2Int("Karma", math.Clamp(OldKarma + Amount, -100, 100))
 end
 
-function aasMsg(msg,ply)
+function aasMsg(msg, ply)
 	net.Start("AAS.Message")
 		net.WriteTable(msg)
 	if ply == nil then net.Broadcast() else net.Send(ply) end

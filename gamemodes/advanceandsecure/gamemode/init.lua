@@ -13,7 +13,7 @@ function GM:Initialize()
 	RunConsoleCommand("physgun_maxangular", 400)
 	RunConsoleCommand("sv_airaccelerate", 1)
 
-	if not file.Exists("aas","DATA") then
+	if not file.Exists("aas", "DATA") then
 		MsgN("Missing base directory 'aas', making...")
 
 		file.CreateDir("aas/maps")	-- Stores all of the information relevant to maps
@@ -32,14 +32,14 @@ if GAMEMODE and GAMEMODE.FirstLoad then timer.Simple(0, function() AAS.Funcs.Rel
 do	-- Organizing stuff :)
 	do	-- Net handling
 		-- Sends the gamemode info to the client
-		net.Receive("AAS.PlayerInit",function(_,ply)
+		net.Receive("AAS.PlayerInit", function(_, ply)
 			print("PLAYERINIT: Updating ", ply)
 
 			AAS.Funcs.UpdateState(ply)
 		end)
 
 		-- Handles when a player wishes to change teams legitimately, and will block them if they aren't allowed (team misbalance, changing too often)
-		net.Receive("AAS.RequestTeamSwap",function(_,ply)
+		net.Receive("AAS.RequestTeamSwap", function(_, ply)
 			if ply.NextTeamSwitch and (ply.NextTeamSwitch >= ST()) then
 				aasMsg({Colors.ErrorCol, "You can't switch teams for another " .. math.Round(ply.NextTeamSwitch - ST(), 1) .. " seconds!"}, ply)
 				return
@@ -51,7 +51,7 @@ do	-- Organizing stuff :)
 
 			if team.NumPlayers(CurTeam) <= team.NumPlayers(CurTeam == 1 and 2 or 1) then
 				local TC = OppTeamData.Color
-				aasMsg({Color(TC.x, TC.y, TC.z), OppTeamData.Name, Colors.BadCol, " has too many players for you to join!"},ply)
+				aasMsg({Color(TC.x, TC.y, TC.z), OppTeamData.Name, Colors.BadCol, " has too many players for you to join!"}, ply)
 				return
 			end
 

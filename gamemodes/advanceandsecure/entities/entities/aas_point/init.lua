@@ -29,21 +29,21 @@ function ENT:UpdateTransmitState() return TRANSMIT_ALWAYS end
 function ENT:ACF_PreDamage() return false end
 
 function ENT:PhysgunPickup()
-	return GetGlobalBool("EditMode",false)
+	return GetGlobalBool("EditMode", false)
 end
 
-function ENT:Use(activator,caller) -- activator and caller are usually the same, except for proxies (wire_user)
-	if activator ~= caller then aasMsg({Color(255,0,0),"You aren't allowed to remotely use this!"},activator) return end
-	if CapStatus(self) ~= activator:Team() then aasMsg({Color(255,0,0),"This is not your point!"},activator) return end
+function ENT:Use(activator, caller) -- activator and caller are usually the same, except for proxies (wire_user)
+	if activator ~= caller then aasMsg({Color(255, 0, 0), "You aren't allowed to remotely use this!"}, activator) return end
+	if CapStatus(self) ~= activator:Team() then aasMsg({Color(255, 0, 0), "This is not your point!"}, activator) return end
 
 	if self:GetIsSpawn() == true then
-		NewPlyManager.ChargeAmmo(activator,true)
+		NewPlyManager.ChargeAmmo(activator, true)
 		NewPlyManager.OpenLoadout(activator)
 
 		local AmmoCrates = ents.FindByClass("acf_ammo")
 		local ValidCrates = {}
 
-		for _,crate in ipairs(AmmoCrates) do
+		for _, crate in ipairs(AmmoCrates) do
 			if not IsValid(crate.Owner) then continue end
 			if crate.Owner ~= activator then continue end
 
@@ -58,15 +58,15 @@ function ENT:Use(activator,caller) -- activator and caller are usually the same,
 			aasMsg({Colors.BasicCol, "All nearby (" .. #AmmoCrates .. ") ammo crates have been refilled for free."}, activator)
 		end
 	else
-		NewPlyManager.ChargeAmmo(activator,false)
+		NewPlyManager.ChargeAmmo(activator, false)
 	end
 end
 
-local function aas_PointStateChange(point,oldstatus,newstatus)
+local function aas_PointStateChange(point, oldstatus, newstatus)
 	net.Start("AAS.UpdatePointState")
 		net.WriteString(point:GetPointName())
-		net.WriteInt(oldstatus,3)
-		net.WriteInt(newstatus,3)
+		net.WriteInt(oldstatus, 3)
+		net.WriteInt(newstatus, 3)
 	net.Broadcast()
 end
 
@@ -107,7 +107,7 @@ function ENT:Think()
 	local Cap1 = 0
 	local Cap2 = 0
 
-	for k,v in player.Iterator() do
+	for _, v in player.Iterator() do
 		if (not IsValid(v)) or (v == NULL) then continue end
 
 		local Team = v:Team()
@@ -129,18 +129,18 @@ function ENT:Think()
 		end
 	end
 
-	self:SetCapture(math.Clamp(Capture + math.Clamp(TotalCap,-20,20),-100,100))
+	self:SetCapture(math.Clamp(Capture + math.Clamp(TotalCap, -20, 20), -100, 100))
 	local HoldStatus = CapStatus(self)
 
 	if HoldStatus ~= LastHeld then
-		aas_PointStateChange(self,self.LastHeld,HoldStatus)
+		aas_PointStateChange(self, self.LastHeld, HoldStatus)
 
 		if not self.PrevCaptured and (HoldStatus ~= 0) then
 			self.PrevCaptured = true
-			DoTicketChange(HoldStatus,20,false)
+			DoTicketChange(HoldStatus, 20, false)
 		elseif self.PrevCaptured and HoldStatus ~= 0 and (self.LastTeamHeld ~= HoldStatus) then
-			DoTicketChange(HoldStatus,30,false)
-			DoTicketChange(self.LastTeamHeld,-10,true)
+			DoTicketChange(HoldStatus, 30, false)
+			DoTicketChange(self.LastTeamHeld, -10, true)
 		end
 
 		if HoldStatus ~= 0 then self.LastTeamHeld = HoldStatus end

@@ -5,7 +5,7 @@ include("shared.lua")
 function ENT:Initialize()
 	self:SetModel("models/hunter/blocks/cube1x1x1.mdl")
 
-	self:SetEditable(GetGlobalBool("EditMode",false))
+	self:SetEditable(GetGlobalBool("EditMode", false))
 
 	self.CPPIOwner = game.GetWorld()
 	self:SetOwner(game.GetWorld())
@@ -34,5 +34,5 @@ end
 function ENT:ACF_PreDamage() return false end
 
 function ENT:PhysgunPickup()
-	return GetGlobalBool("EditMode",false)
+	return GetGlobalBool("EditMode", false)
 end

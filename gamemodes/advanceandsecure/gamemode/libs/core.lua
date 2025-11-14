@@ -2,8 +2,8 @@ MsgN("+ Core loaded")
 
 AAS.Funcs = {}
 
-AAS.SpawnBoundA = Vector(-1024,-1024,-256)
-AAS.SpawnBoundB = Vector(1024,1024,512 + 256)
+AAS.SpawnBoundA = Vector(-1024, -1024, -256)
+AAS.SpawnBoundB = Vector(1024, 1024, 512 + 256)
 
 AAS.ExtendedBoundsA	= AAS.SpawnBoundA + Vector(-256, -256, -256)
 AAS.ExtendedBoundsB	= AAS.SpawnBoundB + Vector(256, 256, 256)
@@ -13,12 +13,12 @@ AAS.CapInfoRange = 256 ^ 2
 
 -- Dandy collection of commonly used colors
 Colors = {
-	ErrorCol = Color(255,0,0),
-	BasicCol = Color(200,200,200),
-	GoodCol = Color(65,255,65),
-	BadCol = Color(255,65,65),
-	White = Color(255,255,255),
-	Black = Color(0,0,0)
+	ErrorCol = Color(255, 0, 0),
+	BasicCol = Color(200, 200, 200),
+	GoodCol = Color(65, 255, 65),
+	BadCol = Color(255, 65, 65),
+	White = Color(255, 255, 255),
+	Black = Color(0, 0, 0)
 }
 
 if SERVER then
@@ -59,7 +59,7 @@ else
 	do	-- Network
 
 		-- Generic message handler
-		net.Receive("AAS.Message",function()
+		net.Receive("AAS.Message", function()
 			local msg = net.ReadTable()
 			chat.AddText(unpack(msg))
 		end)

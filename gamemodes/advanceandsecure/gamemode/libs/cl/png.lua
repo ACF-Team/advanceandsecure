@@ -6,7 +6,7 @@ Png.__index = Png
 local DEFLATE_MAX_BLOCK_SIZE = 16384
 
 local function putBigUint32(val, tbl, index)
-	for i = 0,3 do
+	for i = 0, 3 do
 		tbl[index + i] = bit.band(bit.rshift(val, (3 - i) * 8), 0xFF)
 	end
 end

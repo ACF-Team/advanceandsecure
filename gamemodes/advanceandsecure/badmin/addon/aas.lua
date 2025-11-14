@@ -1,4 +1,4 @@
-function callfunc(ply,args) -- Editmode
+function callfunc(_, args) -- Editmode
 	AAS.Funcs.SetEditMode(tobool(args[1]))
 
 	return true
@@ -9,10 +9,10 @@ cmdSettings = {
 	["MinimumPrivilege"] = 2,
 	["RCONCanUse"] = true
 }
-BAdmin.Utilities.addCommand("aas_editmode",callfunc,cmdSettings)
+BAdmin.Utilities.addCommand("aas_editmode", callfunc, cmdSettings)
 
 
-function callfunc(ply,args) -- Reload
+function callfunc() -- Reload
 	AAS.Funcs.FullReload()
 
 	return true
@@ -23,10 +23,10 @@ cmdSettings = {
 	["MinimumPrivilege"] = 2,
 	["RCONCanUse"] = true
 }
-BAdmin.Utilities.addCommand("aas_load",callfunc,cmdSettings)
+BAdmin.Utilities.addCommand("aas_load", callfunc, cmdSettings)
 
 
-function callfunc(ply,args) -- Save
+function callfunc() -- Save
 	AAS.Funcs.SaveMap()
 
 	return true
@@ -37,4 +37,4 @@ cmdSettings = {
 	["MinimumPrivilege"] = 2,
 	["RCONCanUse"] = true
 }
-BAdmin.Utilities.addCommand("aas_save",callfunc,cmdSettings)
+BAdmin.Utilities.addCommand("aas_save", callfunc, cmdSettings)

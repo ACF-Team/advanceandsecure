@@ -261,7 +261,7 @@ else
 end
 
 --[[ Neat, saving until its separated, has an outline from Sobel shader that I want to further refine and make colorable, somehow
-local GreenVec = Vector(0,255,0)
+local GreenVec = Vector(0, 255, 0)
 local function RenderOutline(Entity)
 	cam.Start3D()
 		render.ClearStencil()
@@ -286,10 +286,10 @@ local function RenderOutline(Entity)
 
 		cam.Start2D()
 			ECol = Entity:GetColor()
-			Col = LerpVector(TimedCos(0.5,0,1,0) + 0.5,GreenVec,Vector(ECol.r, ECol.g, ECol.b))
+			Col = LerpVector(TimedCos(0.5, 0, 1, 0) + 0.5, GreenVec, Vector(ECol.r, ECol.g, ECol.b))
 
 			surface.SetDrawColor(Col.r, Col.g, Col.b) -- Draw back over it with color, above 0 but below the model
-			surface.DrawRect(0,0,SW,SH)
+			surface.DrawRect(0, 0, SW, SH)
 		cam.End2D()
 
 		render.SetStencilWriteMask(255)

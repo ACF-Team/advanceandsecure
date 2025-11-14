@@ -42,7 +42,7 @@ if SERVER then
 	end
 
 	AAS.Funcs.AddTeamXP		= function(teamid, XP)
-		for _,v in ipairs(team.GetPlayers(teamid)) do
+		for _, v in ipairs(team.GetPlayers(teamid)) do
 			AAS.Funcs.AddPlayerXP(v, XP)
 		end
 	end

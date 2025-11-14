@@ -110,7 +110,7 @@ end
 AAS.Funcs.ApplySettings	= function(MapData)
 	local Settings = MapData.Settings
 
-	for k,v in pairs(AAS.GM.Settings) do
+	for k in pairs(AAS.GM.Settings) do
 		if Settings[k] then
 			local Setting = AAS.GM.Settings[k]
 
@@ -150,7 +150,7 @@ do	-- Hook control
 
 	-- Clear any active hooks
 	AAS.Funcs.ClearHooks	= function()
-		for _,v in pairs(AAS.ActiveHooks) do
+		for _, v in pairs(AAS.ActiveHooks) do
 			AAS.Funcs.RemoveHook(v)
 		end
 	end
@@ -175,7 +175,7 @@ AAS.Funcs.LoadGamemode	= function(ID)
 	table.Merge(AAS.GM, AAS.Modes[ID], false)
 
 	-- Purge any settings that were marked for removal
-	for k,v in pairs(AAS.GM.Settings) do
+	for k, v in pairs(AAS.GM.Settings) do
 		if type(v) == TYPE_BOOL then table.remove(k) continue end
 	end
 
@@ -196,8 +196,8 @@ AAS.Funcs.LoadGamemode	= function(ID)
 
 	local MapData = ""
 	local MapFile = "aas/maps/" .. Map .. "/" .. ID .. ".txt"
-	if file.Exists(MapFile,"DATA") then
-		MapData = util.JSONToTable(file.Read(MapFile,"DATA"))
+	if file.Exists(MapFile, "DATA") then
+		MapData = util.JSONToTable(file.Read(MapFile, "DATA"))
 
 		if MapData == "" then
 			MsgN("[AAS] Missing map data for this gamemode!")
@@ -267,13 +267,13 @@ end
 
 local function EnemySZCountdown(ply)
 	if ply.DeathCountdown == nil then return end -- something else, like a round restart, set this to nil
-	if PlyInEnemySafezone(ply,ply:GetPos()) then
+	if PlyInEnemySafezone(ply, ply:GetPos()) then
 		aasMsg({Colors.ErrorCol, "You have " .. ply.DeathCountdown .. " seconds to leave the enemy safezone."}, ply)
 		ply.DeathCountdown = ply.DeathCountdown - 1
 
 		if ply.DeathCountdown >= 0 then
 			AAS.Funcs.AdjustKarma(ply, -10) -- steeply punish the player for being in the enemy safezone
-			timer.Simple(1,function() EnemySZCountdown(ply) end)
+			timer.Simple(1, function() EnemySZCountdown(ply) end)
 		else
 			ply.DeathCountdown = nil
 			ply:Kill()
@@ -294,7 +294,7 @@ local function SafezoneCheck()
 				aasMsg({Colors.BasicCol, "You have ", Colors.BadCol, "left", Colors.BasicCol, " the safezone."}, ply)
 			end
 
-			ply:SetNW2Bool("InSafezone",state) -- this doesn't affect anything right now except for what the client sees, InSafezone is checked for every damage interaction again
+			ply:SetNW2Bool("InSafezone", state) -- this doesn't affect anything right now except for what the client sees, InSafezone is checked for every damage interaction again
 		end
 
 		if PlyInEnemySafezone(ply, ply:GetPos()) and (GetGlobalBool("EditMode", false) == false) and (not ply.DeathCountdown and ply:Alive()) then
@@ -322,18 +322,18 @@ local function BalanceTeams()
 		local PlyIn = math.random(#Team)
 		local Ply = Team[PlyIn]
 		Moving[#Moving + 1] = Ply
-		table.remove(Team,PlyIn)
+		table.remove(Team, PlyIn)
 
 		I = I + 1
 	end
 
 	local SmallerTeamInfo = AAS.Funcs.GetTeamInfo(SmallerTeam)
-	for _,ply in ipairs(Moving) do
+	for _, ply in ipairs(Moving) do
 		ply:SetTeam(SmallerTeam)
 		ply:StripWeapons()
 		ply:StripAmmo()
 		ply:Spawn()
-		aasMsg({Colors.BasicCol,"Moving " .. ply:Nick() .. " to ", SmallerTeamInfo.Color, SmallerTeamInfo.Name, Colors.BasicCol,"!"})
+		aasMsg({Colors.BasicCol, "Moving " .. ply:Nick() .. " to ", SmallerTeamInfo.Color, SmallerTeamInfo.Name, Colors.BasicCol, "!"})
 	end
 end
 
@@ -378,7 +378,7 @@ local function MainTick()
 			if AutoBalanceTick >= 6 then
 				AutoBalance = true
 				AutoBalanceTick = 0
-				aasMsg({Colors.BasicCol,"Autobalancing teams in 5s..."})
+				aasMsg({Colors.BasicCol, "Autobalancing teams in 5s..."})
 			end
 		else AutoBalanceTick = 0 end
 
@@ -391,8 +391,8 @@ local function MainTick()
 end
 
 AAS.Funcs.Start	= function()
-	if GetGlobalBool("EditMode",false) == false then
-		for k,v in pairs(AAS.GM.Hooks) do
+	if GetGlobalBool("EditMode", false) == false then
+		for k, v in pairs(AAS.GM.Hooks) do
 			AAS.Funcs.StartHook(k, v)
 		end
 

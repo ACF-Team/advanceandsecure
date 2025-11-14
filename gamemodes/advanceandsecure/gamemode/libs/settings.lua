@@ -3,13 +3,13 @@ MsgN("+ Settings system loaded")
 if SERVER then
 
 	-- Handles any updates to the server settings, with a myriad of checks to block any unwanted changes
-	net.Receive("AAS.UpdateServerSettings",function(_,ply)
+	net.Receive("AAS.UpdateServerSettings", function(_, ply)
 		local Settings = net.ReadTable()
 		if ply == nil then return end
 		if not ply:IsSuperAdmin() then print(ply:Nick() .. " attempted to update server settings.") return end
-		if not GetGlobalBool("EditMode",false) then print(ply:Nick() .. " attempted to update server settings.") return end
+		if not GetGlobalBool("EditMode", false) then print(ply:Nick() .. " attempted to update server settings.") return end
 
-		for k,v in pairs(Settings) do
+		for k, v in pairs(Settings) do
 			if not AAS.GM.Settings[k] then print("Skipped " .. k .. " as it is not a valid setting.") continue end
 			if type(v.value) ~= type(AAS.GM.Settings[k].value) then print("Skipped " .. k .. " as it is a type mismatch.") continue end
 			local OldSetting = AAS.GM.Settings[k]
@@ -51,12 +51,12 @@ else
 
 	local function SettingsMenu(SV_Settings)
 		local LP = LocalPlayer()
-		if GetGlobalBool("EditMode",false) == false then LP:PrintMessage(HUD_PRINTTALK,"The server is not in edit mode!") return end
+		if GetGlobalBool("EditMode", false) == false then LP:PrintMessage(HUD_PRINTTALK, "The server is not in edit mode!") return end
 
 		-- Copy SV_Settings
 
 		SettingsBase = vgui.Create("DFrame")
-		SettingsBase:SetSize(400,400)
+		SettingsBase:SetSize(400, 400)
 		SettingsBase:SetTitle("Game Settings")
 		SettingsBase:Center()
 		SettingsBase:MakePopup()
@@ -65,19 +65,19 @@ else
 		local InfoLabel = vgui.Create("DLabel", SettingsBase)
 		InfoLabel:SetText("Info: Hover over each item for more info")
 		InfoLabel:Dock(TOP)
-		InfoLabel:DockMargin(0,0,0,0)
+		InfoLabel:DockMargin(0, 0, 0, 0)
 
 		local FinishButton = vgui.Create("DButton", SettingsBase)
-		FinishButton:SetSize(1,24)
+		FinishButton:SetSize(1, 24)
 		FinishButton:SetText("Apply")
-		FinishButton:DockMargin(0,2,0,2)
+		FinishButton:DockMargin(0, 2, 0, 2)
 		FinishButton:Dock(BOTTOM)
 
 		local PropertiesBase = vgui.Create("DProperties", SettingsBase)
 		PropertiesBase:Dock(FILL)
 
 		local sorted_settings = {}
-		for k,v in pairs(SV_Settings) do
+		for k, v in pairs(SV_Settings) do
 			table.insert(sorted_settings, {
 				index	= k,
 				order	= v.order
@@ -87,7 +87,7 @@ else
 		table.SortByMember(sorted_settings, "order", true)
 
 		-- Redo to follow order!
-		for _,setting in ipairs(sorted_settings) do
+		for _, setting in ipairs(sorted_settings) do
 			local v = SV_Settings[setting.index]
 			local k = setting.index
 
@@ -103,28 +103,28 @@ else
 				Item:Setup(PropertyType)
 				Item:SetValue( v.value )
 
-				Item.DataChanged	= function(self, data)
+				Item.DataChanged	= function(_, data)
 					Settings[Item.index].value = data
 				end
 			elseif v.type == "bool" then
 				Item:Setup(PropertyType)
 				Item:SetValue( v.value )
 
-				Item.DataChanged	= function(self, data)
+				Item.DataChanged	= function(_, data)
 					Settings[Item.index].value = tobool(data)
 				end
 			elseif v.type == "number" then
 				Item:Setup(PropertyType, {min = v.min, max = v.max})
 				Item:SetValue( v.value )
 
-				Item.DataChanged	= function(self, data)
+				Item.DataChanged	= function(_, data)
 					Settings[Item.index].value = math.Clamp(math.ceil(data), Settings[Item.index].min, Settings[Item.index].max)
 				end
 			elseif v.type == "color" then
 				Item:Setup(PropertyType)
 				Item:SetValue( v.value / 255 )
 
-				Item.DataChanged	= function(self, data)
+				Item.DataChanged	= function(_, data)
 					local val =	UnfuckulateGarryCode(data)
 					Item:SetValue(val)
 
@@ -145,7 +145,7 @@ else
 	end
 	if SettingsBase then SettingsBase:Remove() end
 
-	net.Receive("AAS.OpenSettings",function()
+	net.Receive("AAS.OpenSettings", function()
 		Settings = net.ReadTable()
 		SettingsMenu(Settings)
 	end)

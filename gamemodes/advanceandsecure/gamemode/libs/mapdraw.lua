@@ -105,12 +105,12 @@ if SERVER then
 		return tostring(math.floor(color.r / 26)) .. tostring(math.floor(color.g / 26)) .. tostring(math.floor(color.b / 26))
 	end
 
-	local Water = Color(0,0,255)
-	local DeepWater = Color(0,0,52)
+	local Water = Color(0, 0, 255)
+	local DeepWater = Color(0, 0, 52)
 
-	local TopoBorder = color2digi(Color(255,127,0))
+	local TopoBorder = color2digi(Color(255, 127, 0))
 
-	local DefaultGround	= Color(55,182,0)
+	local DefaultGround	= Color(55, 182, 0)
 
 	local iterState = {
 		[1] = function()	-- Initial scan
@@ -127,7 +127,7 @@ if SERVER then
 				ScanState.Data[index] = data
 				return
 			else
-				if (not tr.HitWorld) or tr.AllSolid or (tr.HitNormal:Dot(Vector(0,0,1)) == 0) then	-- Fill the void with the void
+				if (not tr.HitWorld) or tr.AllSolid or (tr.HitNormal:Dot(Vector(0, 0, 1)) == 0) then	-- Fill the void with the void
 					data.valid = false
 				else
 					if tr.HitSky or (not util.IsInWorld(tr.HitPos)) then	-- Not a valid surface we want to draw, so make it invisible
@@ -185,7 +185,7 @@ if SERVER then
 
 					if skip then return end
 
-					local VertNormal = math.min(pixelData.trace.HitNormal:Dot(Vector(0,0,1)) ^ 3, 1)
+					local VertNormal = math.min(pixelData.trace.HitNormal:Dot(Vector(0, 0, 1)) ^ 3, 1)
 
 					local col = DefaultGround
 

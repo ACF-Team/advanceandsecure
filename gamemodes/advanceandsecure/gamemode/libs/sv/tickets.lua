@@ -1,28 +1,28 @@
 MsgN("+ Tickets loaded")
 
 AAS.Funcs.FlipTeams	= function()
-	aasMsg({Colors.BasicCol,"Switching the teams!"})
+	aasMsg({Colors.BasicCol, "Switching the teams!"})
 
-	for _,v in player.Iterator() do
+	for _, v in player.Iterator() do
 		v:SetTeam((v:Team() == 1) and 2 or 1)
 	end
 end
 
 AAS.Funcs.ScrambleTeams	= function()
-	aasMsg({Colors.BasicCol,"Scrambling the teams!"})
+	aasMsg({Colors.BasicCol, "Scrambling the teams!"})
 
 	local PlyList = player.GetAll()
 
-	local Flip = math.random(0,1) == 1
+	local Flip = math.random(0, 1) == 1
 
 	while not table.IsEmpty(PlyList) do
-		local ind = math.random(1,#PlyList)
+		local ind = math.random(1, #PlyList)
 		local Ply = PlyList[ind]
 
 		Ply:SetTeam(Flip and 1 or 2)
 		Flip = not Flip
 
-		table.remove(PlyList,ind)
+		table.remove(PlyList, ind)
 	end
 end
 
@@ -33,8 +33,8 @@ AAS.Funcs.UpdateTickets		= function()
 	net.Broadcast()
 end
 
-AAS.Funcs.DoTicketChange	= function(Team,Amount,Check)
-	if GetGlobalBool("EditMode",false) == true then return end
+AAS.Funcs.DoTicketChange	= function(Team, Amount, Check)
+	if GetGlobalBool("EditMode", false) == true then return end
 
 	local Old = AAS.Funcs.GetTeamInfo(Team).Tickets
 
@@ -49,5 +49,5 @@ AAS.Funcs.SetTeamScore	= function(Score)
 	AAS.Funcs.FlushXPList()
 
 	AAS.RoundCounter = AAS.RoundCounter + (Score ~= 0 and 1 or 0)
-	if Score > 0 then team.AddScore(1,1) elseif Score < 0 then team.AddScore(2,1) end
+	if Score > 0 then team.AddScore(1, 1) elseif Score < 0 then team.AddScore(2, 1) end
 end

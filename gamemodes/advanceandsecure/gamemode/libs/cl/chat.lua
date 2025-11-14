@@ -1,14 +1,14 @@
 MsgN("+ Chat system loaded")
 
-local SW,SH = ScrW(),ScrH()
+local SW, SH = ScrW(), ScrH()
 local UU = ((SW > SH) and SH or SW) / 12
 
 local Chat	= {}
 Chat.SuppressMenu	= false
 local modecolors = {
-	[1]	= Color(0,100,200,100),
-	[2] = Color(0,200,0,100),
-	[3]	= Color(200,100,0,100)
+	[1]	= Color(0, 100, 200, 100),
+	[2] = Color(0, 200, 0, 100),
+	[3]	= Color(200, 100, 0, 100)
 }
 
 Chat.build	= function()
@@ -18,9 +18,9 @@ Chat.build	= function()
 
 	frame.open	= true
 	frame:SetSize(UU * 5, UU * 2.5)
-	frame:SetPos(UU * 0.25,ScrH() - (UU * 6.5))
+	frame:SetPos(UU * 0.25, ScrH() - (UU * 6.5))
 	frame:MakePopup()
-	frame.Paint	= function(self, w, h)
+	frame.Paint	= function(_, w, h)
 		draw.RoundedBox(8, 0, 0, w, h, Color(30, 30, 30, 200))
 	end
 	frame.Think	= function()
@@ -36,7 +36,7 @@ Chat.build	= function()
 	Chat.entry = entry
 	entry:SetSize(frame:GetWide(), 20)
 	entry:Dock(FILL)
-	entry:SetTextColor(Color(255,255,255,255))
+	entry:SetTextColor(Color(255, 255, 255, 255))
 	entry:SetFont("BasicChatFont")
 	entry:SetPaintBackground(false)
 	entry:SetPaintBorderEnabled(false)
@@ -47,8 +47,8 @@ Chat.build	= function()
 		derma.SkinHook("Paint", "TextEntry", self, w, h)
 	end
 
-	entrybar.Paint	= function(panel, w, h)
-		draw.RoundedBoxEx(8, 0, 0, w, h, modecolors[Chat.entry.mode] or Color(80,80,80,100), true, true, false, false)
+	entrybar.Paint	= function(_, w, h)
+		draw.RoundedBoxEx(8, 0, 0, w, h, modecolors[Chat.entry.mode] or Color(80, 80, 80, 100), true, true, false, false)
 	end
 
 	entry.OnTextChanged	= function(self)
@@ -106,13 +106,13 @@ Chat.build	= function()
 	Chat.say	= say
 	say:SetText("")
 	surface.SetFont("BasicChatFont")
-	local tw,_ = surface.GetTextSize(text)
+	local tw, _ = surface.GetTextSize(text)
 	say:SetSize(tw + 5, 20)
 	say:Dock(LEFT)
 	say:DockMargin(0, 0, 2, 0)
-	say:SetPos(0,0)
+	say:SetPos(0, 0)
 
-	say.Paint	= function(self, w, h)
+	say.Paint	= function(_, w, h)
 		draw.RoundedBoxEx(8, 0, 0, w, h, Color(30, 30, 30, 100), true, false, false, false)
 		draw.SimpleText(text, "BasicChatFont", 2, Chat.entry:GetTall() / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
@@ -136,7 +136,7 @@ Chat.build	= function()
 			size.sw = Chat.frame:GetWide() - 50
 		end
 
-		local tw2,_ = surface.GetTextSize(text)
+		local tw2, _ = surface.GetTextSize(text)
 		self:SetSize(tw2 + 4, 20)
 	end
 
@@ -216,7 +216,7 @@ function chat.AddText(...)
 
 	Chat.log:SetVisible(true)
 	Chat.lastmsg	= CurTime()
-	Chat.log:InsertColorChange(255,255,255,255)
+	Chat.log:InsertColorChange(255, 255, 255, 255)
 end
 
 function chat.GetChatBoxPos()
@@ -230,7 +230,7 @@ hook.Add("ChatText", "AAS.Chat.JoinLeave", function(_, _, text, msgtype)
 	if not Chat.log then Chat.build() end
 
 	if msgtype ~= "chat" then
-		Chat.log:InsertColorChange(0,128,255,255)
+		Chat.log:InsertColorChange(0, 128, 255, 255)
 		Chat.log:AppendText(text .. "\n")
 		Chat.log:SetVisible(true)
 		Chat.lastmsg	= CurTime()
@@ -239,7 +239,7 @@ hook.Add("ChatText", "AAS.Chat.JoinLeave", function(_, _, text, msgtype)
 end)
 
 hook.Remove("PlayerBindPress", "AAS.Chat.BindHijack")
-hook.Add("PlayerBindPress", "AAS.Chat.BindHijack", function(ply, bind, pressed)
+hook.Add("PlayerBindPress", "AAS.Chat.BindHijack", function(_, bind)
 	if string.sub(bind, 1, 11) == "messagemode" then
 		if not Chat.entry then Chat.build() end
 

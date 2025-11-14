@@ -45,7 +45,7 @@ do  -- Stuff to organize
 			}
 
 			if State.Data.Line then
-				for k,v in ipairs(State.Data.Line) do
+				for k, v in ipairs(State.Data.Line) do
 					local Point = State.Alias[v]
 					if not IsValid(Point) then timer.Simple(1, function() AAS.Funcs.InitPlayer() end) return end
 
@@ -63,7 +63,7 @@ do  -- Stuff to organize
 			else
 				if State.Alias and IsValid(LocalPlayer()) and (LocalPlayer():Team() == 1 or LocalPlayer():Team() == 2) then
 					local PreSortPoints = {}
-					for k,v in pairs(State.Alias) do
+					for _, v in pairs(State.Alias) do
 						if not IsValid(v) then ErrorNoHalt("Failed to get point alias!") timer.Simple(1, function() AAS.Funcs.InitPlayer() end) return end
 
 						table.insert(PreSortPoints, v)
@@ -74,7 +74,7 @@ do  -- Stuff to organize
 						return HomePoint:GetPos():DistToSqr(a:GetPos()) < HomePoint:GetPos():DistToSqr(b:GetPos())
 					end)
 
-					for k,v in ipairs(PreSortPoints) do
+					for k, v in ipairs(PreSortPoints) do
 						local Name = v:GetPointName()
 						if (Name ~= "SpawnA") and (Name ~= "SpawnB") then table.insert(State.ClientPointLine, v) end
 						table.insert(State.FullLine, v)
@@ -96,7 +96,7 @@ do  -- Stuff to organize
 	do	-- Hooks
 		-- Requests information about the running game, like the points and how they are connected
 
-		hook.Add("InitPostEntity","PlyInit",function()
+		hook.Add("InitPostEntity", "PlyInit", function()
 			AAS.Funcs.InitPlayer()
 
 			AAS.Funcs.CheckMap()	-- Checks if the player has the current map PNG saved, and if not, requests it

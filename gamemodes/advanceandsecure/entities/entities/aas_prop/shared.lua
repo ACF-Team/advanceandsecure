@@ -11,16 +11,16 @@ ENT.AdminOnly = true
 
 ENT.Spawnable = false
 
-function ENT:CanTool(ply)
-    return GetGlobalBool("EditMode",false)
+function ENT:CanTool()
+    return GetGlobalBool("EditMode", false)
 end
 
-function ENT:CanProperty(ply)
-    return GetGlobalBool("EditMode",false)
+function ENT:CanProperty()
+    return GetGlobalBool("EditMode", false)
 end
 
 if CLIENT then
     function ENT:ContextMenuEnabled()
-        return GetGlobalBool("EditMode",false)
+        return GetGlobalBool("EditMode", false)
     end
 end

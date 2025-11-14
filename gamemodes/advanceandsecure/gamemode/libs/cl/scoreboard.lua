@@ -1,6 +1,6 @@
 MsgN("+ Scoreboard loaded")
 
-local PlyColor = Color(0,200,0)
+local PlyColor = Color(0, 200, 0)
 local PlyColorHovered	= PlyColor:Lerp(Color(255, 127, 0), 0.5)
 
 local BaseColor	= Color(65, 65, 65)
@@ -11,7 +11,7 @@ local Green	= Color(0, 255, 0)
 
 local nodeColor	= Color(200, 200, 200)
 
-local SW,SH = ScrW(),ScrH()
+local SW, SH = ScrW(), ScrH()
 local UU = ((SW > SH) and SH or SW) / 12
 
 local function localizeToPanel(Vec3, Panel, Limit, Margin)
@@ -31,7 +31,7 @@ local function localizeToPanel(Vec3, Panel, Limit, Margin)
 	local pw, ph	= Panel:GetParent():GetSize()
 
 	local ScreenPos			= {Panel:LocalToScreen(Pos.x, Pos.y)}
-	local min,max			= {Parent:LocalToScreen(nMargin, nMargin)}, {Parent:LocalToScreen(pw - nMargin, ph - nMargin)}
+	local min, max			= {Parent:LocalToScreen(nMargin, nMargin)}, {Parent:LocalToScreen(pw - nMargin, ph - nMargin)}
 	if (ScreenPos[1] < min[1]) or (ScreenPos[1] > max[1]) or (ScreenPos[2] < min[2]) or (ScreenPos[2] > max[2]) then
 		local LocPos	= {Panel:ScreenToLocal(
 			math.Clamp(ScreenPos[1], min[1], max[1]),
@@ -62,7 +62,7 @@ function scoreboard:show()
 	frame:CenterVertical(-0.5)
 	frame:CenterHorizontal(0.5)
 	frame:NoClipping(true)
-	frame.Paint	= function(panel, w, h)
+	frame.Paint	= function(_, w, h)
 		surface.SetDrawColor(Color(0, 0, 0, 96))
 		surface.DrawRect(0, 0, w, h)
 	end
@@ -89,7 +89,7 @@ function scoreboard:show()
 	info:SetSize(UU * 9, UU * 0.5)
 	info:SetPos(map:GetX(), map:GetY() + (UU * 9.25))
 
-	info.Paint	= function(panel, w, h)
+	info.Paint	= function(_, w, h)
 		surface.SetDrawColor(65, 65, 65)
 		surface.DrawRect(0, 0, w, h)
 
@@ -109,7 +109,7 @@ function scoreboard:show()
 	teampanel:SetSize(UU * 9, UU * 9)
 	teampanel:AlignTop(UU * 1)
 	teampanel:AlignRight(UU * 0.5)
-	teampanel.Paint	= function(panel, w, h)
+	teampanel.Paint	= function(_, w, h)
 		draw.RoundedBox(12, 0, 0, w, h, Color(65, 65, 65, 127))
 	end
 
@@ -198,7 +198,7 @@ function scoreboard:show()
 					end
 				end
 
-				p2.DoClick	= function(panel2)
+				p2.DoClick	= function()
 					local Menu	= DermaMenu()
 
 					if ply:Team() == TN then
@@ -220,7 +220,7 @@ function scoreboard:show()
 			end
 		end
 
-		teamAList.Paint	= function(panel, w, h)
+		teamAList.Paint	= function(_, w, h)
 			draw.RoundedBox(8, 0, 0, w, h, Color(65, 65, 65))
 		end
 
@@ -312,7 +312,7 @@ function scoreboard:show()
 					end
 				end
 
-				p2.DoClick	= function(panel2)
+				p2.DoClick	= function()
 					local Menu	= DermaMenu()
 
 					if ply:Team() == TN then
@@ -334,7 +334,7 @@ function scoreboard:show()
 			end
 		end
 
-		teamBList.Paint	= function(panel, w, h)
+		teamBList.Paint	= function(_, w, h)
 			draw.RoundedBox(8, 0, 0, w, h, Color(65, 65, 65))
 		end
 
@@ -344,7 +344,7 @@ function scoreboard:show()
 	local buttonPanel	= vgui.Create("DPanel", frame)
 	buttonPanel:SetSize(UU * 9, UU * 0.5)
 	buttonPanel:SetPos(teampanel:GetX(), teampanel:GetY() + (UU * 9.25))
-	buttonPanel.Paint	= function(panel, w, h)
+	buttonPanel.Paint	= function(_, w, h)
 		surface.SetDrawColor(65, 65, 65)
 		surface.DrawRect(0, 0, w, h)
 
@@ -369,7 +369,7 @@ function scoreboard:show()
 
 			draw.SimpleTextOutlined("Switch Team", "BasicFontLarge", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 		end
-		switchTeam.DoClick	= function(panel)
+		switchTeam.DoClick	= function()
 			scoreboard:hide()
 
 			net.Start("AAS.RequestTeamSwap")
@@ -389,14 +389,14 @@ function scoreboard:show()
 
 			draw.SimpleTextOutlined("Request Dupe List", "BasicFontLarge", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 		end
-		requestDupes.DoClick	= function(panel)
+		requestDupes.DoClick	= function()
 			scoreboard:hide()
 
 			if AdvDupe2 then
 				net.Start("AAS.RequestDupeList")
 				net.SendToServer()
 			else
-				chat.AddText(Color(255,0,0),"AdvDupe2 is not available!")
+				chat.AddText(Color(255, 0, 0), "AdvDupe2 is not available!")
 			end
 		end
 
@@ -413,7 +413,7 @@ function scoreboard:show()
 
 			draw.SimpleTextOutlined("Request Cost Script", "BasicFontLarge", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 		end
-		requestCostScript.DoClick	= function(panel)
+		requestCostScript.DoClick	= function()
 			scoreboard:hide()
 
 			net.Start("AAS.RequestCostScript")
@@ -442,7 +442,7 @@ function scoreboard:show()
 		plymarker:NoClipping(true)
 
 		plymarker:SetSize(UU * 0.15, UU * 0.15)
-		plymarker.Paint	= function(panel, w, h)
+		plymarker.Paint	= function(panel, w)
 			if not plymarker.arrow then return end
 			draw.NoTexture()
 			render.SetColorMaterial()
@@ -496,8 +496,8 @@ function scoreboard:show()
 				local Menu		= DermaMenu()
 
 				Menu:AddOption("Track", function() mapcanvas:StartTrack(panel) end)
-				Menu:AddOption("Catch a ride!", function() RunConsoleCommand("say_team","Hey " .. plyname .. ", let me come with you!") end)
-				Menu:AddOption("Follow me!", function() RunConsoleCommand("say_team","Hey " .. plyname .. ", follow me!") end)
+				Menu:AddOption("Catch a ride!", function() RunConsoleCommand("say_team", "Hey " .. plyname .. ", let me come with you!") end)
+				Menu:AddOption("Follow me!", function() RunConsoleCommand("say_team", "Hey " .. plyname .. ", follow me!") end)
 
 				Menu:Open()
 			end
@@ -517,7 +517,7 @@ function scoreboard:show()
 
 		pointmarker:SetSize(UU * 0.2, UU * 0.2)
 
-		pointmarker.Paint	= function(panel, w, h)
+		pointmarker.Paint	= function(panel, w)
 			if (not IsValid(panel.point)) or (panel.point == NULL) then panel:Remove() return end
 			local markpoint	= panel.point
 
@@ -546,9 +546,9 @@ function scoreboard:show()
 		pointmarker.ApplySchemeSettings	= function(panel)
 			local InnerPoly, OuterPoly	= {}, {}
 
-			local w,h	= panel:GetSize()
+			local w, h	= panel:GetSize()
 
-			for I = 1,6 do
+			for I = 1, 6 do
 				local Ang = math.rad(60 * I)
 				InnerPoly[I] = {x = (math.cos(Ang) * 0.8 * (w / 2)) + (w / 2), y = (math.sin(Ang) * 0.8 * (h / 2)) + (h / 2)}
 				OuterPoly[I] = {x = (math.cos(Ang) * (w / 2)) + (w / 2), y = (math.sin(Ang) * (h / 2)) + (h / 2)}
@@ -571,9 +571,9 @@ function scoreboard:show()
 				if (not IsValid(panel.point)) or (panel.point == NULL) then panel:Remove() return end
 
 				if CapStatus(v) == LP:Team() then
-					RunConsoleCommand("say_team","Defend the " .. panel.name .. " point!")
+					RunConsoleCommand("say_team", "Defend the " .. panel.name .. " point!")
 				else
-					RunConsoleCommand("say_team","Attack the " .. panel.name .. " point!")
+					RunConsoleCommand("say_team", "Attack the " .. panel.name .. " point!")
 				end
 			end
 		end
@@ -589,7 +589,7 @@ function scoreboard:show()
 
 		nodemarker:SetSize(UU * 0.2, UU * 0.2)
 
-		nodemarker.Paint	= function(panel, w, h)
+		nodemarker.Paint	= function(panel)
 			if (not IsValid(panel.node)) or (panel.node == NULL) then panel:Remove() return end
 
 			if not panel.inner then return end
@@ -615,9 +615,9 @@ function scoreboard:show()
 		nodemarker.ApplySchemeSettings	= function(panel)
 			local InnerPoly, OuterPoly	= {}, {}
 
-			local w,h	= panel:GetSize()
+			local w, h	= panel:GetSize()
 
-			for I = 1,3 do
+			for I = 1, 3 do
 				local Ang = math.rad((120 * I) + 90)
 				InnerPoly[I] = {x = (math.cos(Ang) * 0.7 * (w / 2)) + (w / 2), y = (math.sin(Ang) * 0.7 * (h / 2)) + (h / 2)}
 				OuterPoly[I] = {x = (math.cos(Ang) * (w / 2)) + (w / 2), y = (math.sin(Ang) * (h / 2)) + (h / 2)}

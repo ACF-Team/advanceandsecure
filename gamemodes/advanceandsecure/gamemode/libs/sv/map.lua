@@ -3,17 +3,17 @@ MsgN("+ Map system loaded")
 local ST		= SysTime
 
 AAS.Funcs.SetEditMode = function(bool)
-	SetGlobalBool("EditMode",bool)
+	SetGlobalBool("EditMode", bool)
 
-	aasMsg({Colors.BasicCol,"Game Editmode has been set to ",tostring(GetGlobalBool("EditMode",false)),"."})
+	aasMsg({Colors.BasicCol, "Game Editmode has been set to ", tostring(GetGlobalBool("EditMode", false)), "."})
 
 	if bool == true then
-		for k,v in player.Iterator() do
+		for _, v in player.Iterator() do
 			if v:IsSuperAdmin() then v:Give("gmod_tool") v:Give("weapon_physgun") end
 		end
 	end
 
-	if not AAS.SuppressReload then AAS.SuppressReload = false timer.Simple(0,AAS.Funcs.ReloadGamemode) end
+	if not AAS.SuppressReload then AAS.SuppressReload = false timer.Simple(0, AAS.Funcs.ReloadGamemode) end
 end
 
 AAS.Funcs.ResetPlayer	= function(ply)
@@ -21,9 +21,9 @@ AAS.Funcs.ResetPlayer	= function(ply)
 	ply:SetFrags(0)
 	ply:SetDeaths(0)
 
-	ply:SetNW2Int("Karma",0)
-	ply:SetNW2Int("Requisition",0)
-	ply:SetNW2Int("UsedRequisition",0)
+	ply:SetNW2Int("Karma", 0)
+	ply:SetNW2Int("Requisition", 0)
+	ply:SetNW2Int("UsedRequisition", 0)
 
 	ply:StripWeapons()
 	ply:RemoveAllAmmo()
@@ -37,15 +37,15 @@ AAS.Funcs.Reset = function(Bypass)
 		Team	= {},
 	}
 
-	SetGlobalBool("AAS.Voting",false)
+	SetGlobalBool("AAS.Voting", false)
 
 	for _, v in player.Iterator() do
-		if AAS.RoundCounter == 1 then v:SetNW2Int("KnownRound",0) end
+		if AAS.RoundCounter == 1 then v:SetNW2Int("KnownRound", 0) end
 
-		v:SetNW2Int("Karma",0)
-		v:SetNW2Int("Requisition",0)
-		v:SetNW2Int("UsedRequisition",0)
-		v:SetNW2Bool("InSafezone",true)
+		v:SetNW2Int("Karma", 0)
+		v:SetNW2Int("Requisition", 0)
+		v:SetNW2Int("UsedRequisition", 0)
+		v:SetNW2Bool("InSafezone", true)
 		v:UnLock()
 
 		v.DeathCountdown	= nil
@@ -61,8 +61,8 @@ end
 
 AAS.Funcs.DeepReset = function()
 	AAS.RoundCounter = 1
-	team.SetScore(1,0)
-	team.SetScore(2,0)
+	team.SetScore(1, 0)
+	team.SetScore(2, 0)
 	AAS.Halt = false
 	AAS.Voting = false
 	AAS.RTV = false
@@ -70,7 +70,7 @@ AAS.Funcs.DeepReset = function()
 
 	AAS.Funcs.Reset()
 
-	for _,v in player.Iterator() do
+	for _, v in player.Iterator() do
 		v:UnSpectate()
 	end
 end
@@ -85,7 +85,7 @@ AAS.Funcs.SaveMap	= function()
 	Data.Data	= {}
 	Data.Settings	= {}
 
-	for k,v in pairs(AAS.GM.Settings) do
+	for k, v in pairs(AAS.GM.Settings) do
 		Data.Settings[k] = v.value
 	end
 
@@ -111,7 +111,7 @@ AAS.Funcs.SaveMap	= function()
 			table.insert(Data.Points, PointData)
 		end
 	else
-		aasMsg({Colors.ErrorCol,"[AAS] No points detected! Aborting"})
+		aasMsg({Colors.ErrorCol, "[AAS] No points detected! Aborting"})
 		return
 	end
 
@@ -126,7 +126,7 @@ AAS.Funcs.SaveMap	= function()
 			})
 		end
 	else
-		aasMsg({Colors.ErrorCol,"[AAS] No spawn points detected! Aborting"})
+		aasMsg({Colors.ErrorCol, "[AAS] No spawn points detected! Aborting"})
 		return
 	end
 
@@ -167,9 +167,9 @@ AAS.Funcs.LoadMap	= function(MapData)
 	print("[AAS] Loading!")
 	game.CleanUpMap( false, { "env_fire", "entityflame", "_firesmoke" } )
 
-	for _,itemType in ipairs(removeExtra) do
+	for _, itemType in ipairs(removeExtra) do
 		local items = ents.FindByClass(itemType)
-		for _,item in ipairs(items) do
+		for _, item in ipairs(items) do
 			item:Remove()
 		end
 	end
@@ -236,12 +236,12 @@ AAS.Funcs.LoadMap	= function(MapData)
 			return
 		end
 
-		for _,v in ipairs(ents.FindByClass("aas_spawnpoint")) do
+		for _, v in ipairs(ents.FindByClass("aas_spawnpoint")) do
 			local pos	= v:GetPos()
 			local D1	= pos:DistToSqr(SpawnA:GetPos())
 			local D2	= pos:DistToSqr(SpawnB:GetPos())
 
-			if D1 < D2 then table.insert(AAS.Spawnpoints[1],v) else table.insert(AAS.Spawnpoints[2],v) end
+			if D1 < D2 then table.insert(AAS.Spawnpoints[1], v) else table.insert(AAS.Spawnpoints[2], v) end
 		end
 
 		AAS.Funcs.UpdateState()
@@ -256,8 +256,8 @@ AAS.Funcs.LoadMap	= function(MapData)
 		end
 	end)
 
-	if GetGlobalBool("EditMode",false) then
-		aasMsg({Colors.ErrorCol,"The game has been loaded with EditMode enabled!"})
+	if GetGlobalBool("EditMode", false) then
+		aasMsg({Colors.ErrorCol, "The game has been loaded with EditMode enabled!"})
 	end
 
 	-- Call the gamemode specific load function, incase theres anything extra

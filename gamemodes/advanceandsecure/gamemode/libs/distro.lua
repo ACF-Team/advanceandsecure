@@ -279,7 +279,7 @@ else	-- Client
 				if not CostBreakdown.FilterList then
 					CostBreakdown.FilterList = Str
 				else
-					CostBreakdown.FilterList = CostBreakdown.FilterList .. "," .. Str
+					CostBreakdown.FilterList = CostBreakdown.FilterList .. ", " .. Str
 				end
 			end
 
@@ -288,7 +288,7 @@ else	-- Client
 				if not CostBreakdown.CalcSingleFilter then
 					CostBreakdown.CalcSingleFilter = Str
 				else
-					CostBreakdown.CalcSingleFilter = CostBreakdown.CalcSingleFilter .. "," .. Str
+					CostBreakdown.CalcSingleFilter = CostBreakdown.CalcSingleFilter .. ", " .. Str
 				end
 			end
 
@@ -297,7 +297,7 @@ else	-- Client
 				if not CostBreakdown.ACFGunCost then
 					CostBreakdown.ACFGunCost = Str
 				else
-					CostBreakdown.ACFGunCost = CostBreakdown.ACFGunCost .. "," .. Str
+					CostBreakdown.ACFGunCost = CostBreakdown.ACFGunCost .. ", " .. Str
 				end
 			end
 
@@ -306,7 +306,7 @@ else	-- Client
 				if not CostBreakdown.ACFAmmoModifier then
 					CostBreakdown.ACFAmmoModifier = Str
 				else
-					CostBreakdown.ACFAmmoModifier = CostBreakdown.ACFAmmoModifier .. "," .. Str
+					CostBreakdown.ACFAmmoModifier = CostBreakdown.ACFAmmoModifier .. ", " .. Str
 				end
 			end
 
@@ -315,7 +315,7 @@ else	-- Client
 				if not CostBreakdown.ACFMissileModifier then
 					CostBreakdown.ACFMissileModifier = Str
 				else
-					CostBreakdown.ACFMissileModifier = CostBreakdown.ACFMissileModifier .. "," .. Str
+					CostBreakdown.ACFMissileModifier = CostBreakdown.ACFMissileModifier .. ", " .. Str
 				end
 			end
 
@@ -324,7 +324,7 @@ else	-- Client
 				if not CostBreakdown.SpecialModelFilter then
 					CostBreakdown.SpecialModelFilter = Str
 				else
-					CostBreakdown.SpecialModelFilter = CostBreakdown.SpecialModelFilter .. "," .. Str
+					CostBreakdown.SpecialModelFilter = CostBreakdown.SpecialModelFilter .. ", " .. Str
 				end
 			end
 
@@ -333,7 +333,7 @@ else	-- Client
 				if not CostBreakdown.ACFRadars then
 					CostBreakdown.ACFRadars = Str
 				else
-					CostBreakdown.ACFRadars = CostBreakdown.ACFRadars .. "," .. Str
+					CostBreakdown.ACFRadars = CostBreakdown.ACFRadars .. ", " .. Str
 				end
 			end
 

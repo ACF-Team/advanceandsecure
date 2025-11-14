@@ -19,19 +19,19 @@ GMT.Desc	= "Attackers versus defenders"
 
 AAS.SettingsFuncs.Remove(GMT, "Non-linear") -- By nature points *must* be connected
 
-GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
+GMT.Init	= function()	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
 end
 
 GMT.Load	= function(MapData) -- Assemble the map here
 	AAS.State.Data["Line"] = MapData.Data.Line
 	AAS.State.LineLookup	= {}
-	for k,v in ipairs(AAS.State.Data["Line"]) do
+	for k, v in ipairs(AAS.State.Data["Line"]) do
 		AAS.State.LineLookup[AAS.State.Alias[v]] = k
 	end
 end
 
-GMT.Save	= function(MapData) -- Return false to abort saving for any reason
+GMT.Save	= function() -- Return false to abort saving for any reason
 	return true
 end
 
@@ -41,7 +41,7 @@ GMT.TicketThink	= function() -- Called when the server is doing ticket changes
 	local Points = ents.FindByClass("aas_point")
 	local TotalPoints = #Points - 2 -- There are always atleast 2 points due to team spawns technically being points
 
-	if TotalPoints == 0 then AAS.Funcs.Stop() aasMsg({Colors.ErrorCol,"[AAS] Halting game due to no capturable points being available."}) end
+	if TotalPoints == 0 then AAS.Funcs.Stop() aasMsg({Colors.ErrorCol, "[AAS] Halting game due to no capturable points being available."}) end
 
 	for _, v in ipairs(Points) do
 		if v:GetIsSpawn() then continue end

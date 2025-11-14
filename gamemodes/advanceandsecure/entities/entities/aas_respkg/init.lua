@@ -68,10 +68,10 @@ end
 -- Special function that ACF will check, usually has DmgResult and DmgInfo passed, but we are just flat denying any damage
 function ENT:ACF_PreDamage() return false end
 
-function ENT:Use(activator,caller) -- activator and caller are usually the same, except for proxies (wire_user)
+function ENT:Use(activator, caller) -- activator and caller are usually the same, except for proxies (wire_user)
 	if self.Dissolving then return end
 
-	if activator ~= caller then aasMsg({Color(255,0,0),"You aren't allowed to remotely use this!"}, activator) return end
+	if activator ~= caller then aasMsg({Color(255, 0, 0), "You aren't allowed to remotely use this!"}, activator) return end
 
 	if AAS.Funcs.EntInPlayerSafezone(self, activator) then
 		for _, ply in ipairs(team.GetPlayers(activator:Team())) do
