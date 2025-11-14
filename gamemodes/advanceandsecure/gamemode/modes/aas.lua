@@ -10,7 +10,7 @@ AAS.Funcs.DefineGamemode("aas", GMT)
 GMT.Name	= "Advance and Secure"
 GMT.Desc	= "Linear point capturing"
 
-GMT.Init	= function(MapData)	-- Setup whatever is required for this gamemode to run. This is AFTER settings have been applied
+GMT.Init	= function()	-- Setup whatever is required for this gamemode to run. This is AFTER settings have been applied
 	AAS.Funcs.UpdateState()
 end
 

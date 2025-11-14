@@ -8,7 +8,7 @@ function PANEL:Init()
 	canvas.zoom	= 3
 	canvas.Tracking	= false
 
-	canvas.PerformLayout	= function(panel)
+	canvas.PerformLayout	= function()
 		self:PerformLayout()
 		self:InvalidateParent()
 	end

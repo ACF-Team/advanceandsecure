@@ -9,17 +9,17 @@ AAS.Funcs.DefineGamemode("raas", GMT)
 GMT.Name	= "Random Advance and Secure"
 GMT.Desc	= "Randomized linear point capturing"
 
-GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
+GMT.Init	= function()	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here
+GMT.Load	= function() -- Assemble the map here
 	MsgN("========================== RAAS Start Generation")
 	local SpawnA, SpawnB
 	local AllPoints, PointList, InvPointList = {}, {}, {}
 
 	local NumPoints = 0
-	for point, alias in pairs(AAS.State.AliasLookup) do
+	for point in pairs(AAS.State.AliasLookup) do
 		if point:GetIsSpawn() then
 			if point:GetTeamSpawn() == 1 then SpawnA = point else SpawnB = point end
 		else
@@ -164,7 +164,7 @@ GMT.Load	= function(MapData) -- Assemble the map here
 	end
 end
 
-GMT.Save	= function(MapData) -- Return false to abort saving for any reason
+GMT.Save	= function() -- Return false to abort saving for any reason
 	return true
 end
 

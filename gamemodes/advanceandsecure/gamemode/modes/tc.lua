@@ -25,16 +25,16 @@ AAS.Funcs.DefineGamemode("tc", GMT)
 GMT.Name	= "Territory Control"
 GMT.Desc	= "Hex-based zone capturing across the map"
 
-GMT.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
+GMT.Init	= function()	-- Setup whatever settings for the map to run here. Should be a clean slate
 	AAS.Funcs.UpdateState()
 	AAS.Grid	= require("hexgrid")
 end
 
-GMT.Load	= function(MapData) -- Assemble the map here
+GMT.Load	= function() -- Assemble the map here
 	-- Load grid settings
 end
 
-GMT.Save	= function(MapData) -- Return false to abort saving for any reason
+GMT.Save	= function() -- Return false to abort saving for any reason
 	-- Save grid settings
 end
 
