@@ -47,6 +47,7 @@ end
 -- Client
 includecs_cl("libs/cl/fonts.lua")		-- Fonts used elsewhere
 includecs_cl("libs/cl/vgui/panmap.lua")
+includecs_cl("libs/cl/vgui/votepanel_button.lua")
 includecs_cl("libs/cl/hud.lua")			-- Bulk of the client UI
 includecs_cl("libs/cl/hints.lua")		-- Hints that are displayed while the player is dead
 includecs_cl("libs/cl/scoreboard.lua")	-- The scoreboard

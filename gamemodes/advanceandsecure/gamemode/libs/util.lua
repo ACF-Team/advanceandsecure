@@ -1,5 +1,7 @@
 MsgN("+ Util loaded")
 
+local Clamp	= math.Clamp
+
 if CLIENT then
 	AAS.InfoQueued = false
 
@@ -164,7 +166,7 @@ function checkConnection(Point, Alias, Line, Lookup, Team)
 end
 
 function ClampVector(V1, V2, V3)
-	return Vector(math.Clamp(V1.x, V2.x, V3.x), math.Clamp(V1.y, V2.y, V3.y), math.Clamp(V1.z, V2.z, V3.z))
+	return Vector(Clamp(V1.x, V2.x, V3.x), Clamp(V1.y, V2.y, V3.y), Clamp(V1.z, V2.z, V3.z))
 end
 
 function InSafezone(Pos)

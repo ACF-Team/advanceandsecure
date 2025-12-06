@@ -148,11 +148,55 @@ else	-- Cient
 	local RTV = false
 	local Time = 0
 
+	--[[
+	local testpanel
+	concommand.Add("aas_vguitest", function()
+		if testpanel then testpanel:Remove() end
+
+		local maplist = {"gm_baik_coast_03", "gm_bluehills_test3", "emp_silo_rc5", "emp_fuel_a3_2013", "emp_blackmountain", "gm_diprip_refinery", "gm_diprip_dam"}
+
+		testpanel	= vgui.Create("DFrame")
+		testpanel:SetSize(ScrW() * 0.5, ScrH() * 0.75)
+		testpanel:Center()
+		testpanel:MakePopup()
+
+		local scrollpanel	= vgui.Create("DScrollPanel", testpanel)
+		scrollpanel:Dock(FILL)
+
+		local iconlist		= vgui.Create("DIconLayout", scrollpanel)
+		iconlist:Dock(FILL)
+		iconlist:SetSpaceX(6)
+		iconlist:SetSpaceY(6)
+
+		for i = 1, 20 do
+			local btn = iconlist:Add("VoteButton")
+			btn:SetSize(300, 320)
+			if maplist[i] then
+				btn:SetMap(maplist[i], "fuck")
+			else
+				btn:SetMap("map_" .. i, "fuck")
+			end
+
+			if i == 1 then btn:SetSelected(true) end
+		end
+	end)
+	]]
+
 	local function SendVote(choice)
 		net.Start("AAS.ReceiveVote")
 			net.WriteUInt(choice, 3)
 		net.SendToServer()
 	end
+
+	--[[
+		New vote panel:
+		Start with a DFrame that encompasses most of the screen, then fill with a DScrollPanel so we have a scrollbar
+		Next, fill *that* with DIconLayout; this is a nice way of having a scrollable grid
+		Then, add all of the buttons to that; as they are added, they are automatically aligned
+		> https://wiki.facepunch.com/gmod/DIconLayout
+
+
+	]]
 
 	if VotePanel then VotePanel:Remove() end
 	local function VoteMenu()

@@ -9,18 +9,18 @@ if SERVER then
 		if not ply:IsSuperAdmin() then print(ply:Nick() .. " attempted to update server settings.") return end
 		if not GetGlobalBool("EditMode", false) then print(ply:Nick() .. " attempted to update server settings.") return end
 
-		for k, v in pairs(Settings) do
-			if not AAS.GM.Settings[k] then print("Skipped " .. k .. " as it is not a valid setting.") continue end
-			if type(v.value) ~= type(AAS.GM.Settings[k].value) then print("Skipped " .. k .. " as it is a type mismatch.") continue end
-			local OldSetting = AAS.GM.Settings[k]
+		for setting, v in pairs(Settings) do
+			if not AAS.GM.Settings[setting] then print("Skipped " .. setting .. " as it is not a valid setting.") continue end
+			if type(v.value) ~= type(AAS.GM.Settings[setting].value) then print("Skipped " .. setting .. " as it is a type mismatch.") continue end
+			local OldSetting = AAS.GM.Settings[setting]
 
 			if v.value ~= OldSetting.value then
-				print("== " .. k .. " was changed!\n| Old value: " .. tostring(AAS.GM.Settings[k].value) .. "\n| New value: " .. tostring(v.value))
+				print("== " .. setting .. " was changed!\n| Old value: " .. tostring(AAS.GM.Settings[setting].value) .. "\n| New value: " .. tostring(v.value))
 
 				if OldSetting.type == "number" then
-					AAS.GM.Settings[k].value = math.Clamp(v.value, OldSetting.min, OldSetting.max)
+					AAS.GM.Settings[setting].value = math.Clamp(v.value, OldSetting.min, OldSetting.max)
 				else
-					AAS.GM.Settings[k].value = v.value
+					AAS.GM.Settings[setting].value = v.value
 				end
 			end
 		end

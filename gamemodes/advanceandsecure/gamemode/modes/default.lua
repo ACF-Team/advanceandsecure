@@ -17,17 +17,24 @@ AAS.SettingsFuncs.Number(DefaultMode, "Tickets", 300, 50, 1000, "Maximum number 
 AAS.SettingsFuncs.Bool(DefaultMode, "Death ticket loss", true, "Whether or not dying causes the team to lose a ticket", -7)
 AAS.SettingsFuncs.Bool(DefaultMode, "Non-linear", false, "Enable/disable point linking", -6)
 
-DefaultMode.Init	= function()	-- Setup whatever settings for the map to run here. Should be a clean slate
+DefaultMode.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
+	PrintTable(MapData)
 	ErrorNoHalt("Somehow the game was loaded without a valid gamemode!") -- Remove when using in a new mode!
 	AAS.SuppressReload = true
 	AAS.Funcs.SetEditMode(true)
 end
 
-DefaultMode.Load	= function() -- Assemble the map here, like placing points/spawns
+DefaultMode.Load	= function(MapData) -- Assemble the map here, like placing points/spawns
+	PrintTable(MapData)
 
+	ErrorNoHalt("This should not have loaded here!")
 end
 
-DefaultMode.Save	= function() -- Return false to abort saving for any reason
+DefaultMode.Save	= function(MapData) -- Return false to abort saving for any reason
+	PrintTable(MapData)
+
+	ErrorNoHalt("Should not have saved here either")
+
 	return false
 end
 
@@ -259,7 +266,7 @@ do	-- Hookery
 		local MaxDist	= 2048 ^ 2
 		local LegalFilter = {acf_gun = true, acf_engine = true, acf_rack = true}
 		AAS.Funcs.AddHook(DefaultMode, "ACF_IsLegal", function(ent)
-			--return IsLegal, "reason", "description", OverrideTime
+			--return IsLegal,"reason","description",OverrideTime
 			if not (LegalFilter[ent:GetClass()] or false) then return true end
 
 			local Owner = ent:CPPIGetOwner()
@@ -277,7 +284,7 @@ do	-- Hookery
 		-- Prevents using toolguns outside of the player's spawn, EditMode bypasses this
 		local ExplicitFilter = {}
 		ExplicitFilter["proper_clipping"] = true
-		AAS.Funcs.AddHook(DefaultMode, "CanTool", function(ply, trace, tool) -- tool, button also available, but not needed
+		AAS.Funcs.AddHook(DefaultMode, "CanTool", function(ply, trace, tool) -- tool,button also available, but not needed
 			if GetGlobalBool("EditMode", false) then return true end
 			if ExplicitFilter[tool] then return true end
 
@@ -343,7 +350,9 @@ do	-- Hookery
 			prop_vehicle_jeep = true,
 			prop_vehicle_jeep_old = true
 		}
-		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnVehicle", function(ply, _, _, victable)
+		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnVehicle", function(ply, _, vicname)
+			local victable = list.GetEntry("Vehicles", vicname)
+
 			if BannedVehicles[victable.Class] or false then
 				aasMsg({Colors.ErrorCol, "You aren't allowed to spawn '" .. victable.Name  .. "'!"}, ply)
 				return false
