@@ -76,9 +76,7 @@ function PANEL:Paint(w, h)
 
 end
 
-function PANEL:PerformLayout(w, h)
-
-
+function PANEL:PerformLayout()
 	local gamepath = file.Exists("maps/thumb/" .. self.map .. ".png", "GAME")
 	local workshoppath = file.Exists("maps/thumb/" .. self.map .. ".png", "WORKSHOP")
 	-- The icon of the map, as seen in the browser
