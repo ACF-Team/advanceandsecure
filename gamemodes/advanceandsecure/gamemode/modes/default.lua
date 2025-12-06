@@ -353,7 +353,7 @@ do	-- Hookery
 		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnVehicle", function(ply, _, vicname)
 			local victable = list.GetEntry("Vehicles", vicname)
 
-			if BannedVehicles[victable.Class] or false then
+			if (victable and BannedVehicles[victable.Class]) or false then
 				aasMsg({Colors.ErrorCol, "You aren't allowed to spawn '" .. victable.Name  .. "'!"}, ply)
 				return false
 			end
