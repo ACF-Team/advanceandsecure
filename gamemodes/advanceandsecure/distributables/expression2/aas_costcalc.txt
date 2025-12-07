@@ -1,5 +1,8 @@
 @name Advance and Secure Cost Calculator
-@persist [AASCostInfo Entities Breakdown CostBreakdown]:table [Keys]:array Run TotalCost KeyI ValI
+@persist [AASCostInfo Entities Breakdown CostBreakdown]:table [Keys]:array RunTimer:string TotalCost KeyI ValI
+@strict # nerd
+
+AASCostInfo = table()
 
 #[
     Made by LiddulBOFH
@@ -15,42 +18,7 @@
     Cost of a vehicle is a breakdown of multiple aspects, to include weight, weaponry, ammo storage, engine power (peak torque), and miscellaneous components (E2/SF chips)
 ]#
 
-if(first()){
-    AASCostInfo = table()
-
-    # These tables should be populated automatically when the script is copied from the server, if they are empty you need to let a developer know, or get a new copy!
-    AASCostInfo["FilterList",table] = table(%s)
-    AASCostInfo["CalcSingleFilter",table] = table(%s)
-    AASCostInfo["ACFGunCost",table] = table(%s)
-    AASCostInfo["ACFAmmoModifier",table] = table(%s)
-    AASCostInfo["ACFMissileModifier",table] = table(%s)
-    AASCostInfo["SpecialModelFilter",table] = table(%s)
-    AASCostInfo["ACFRadars",table] = table(%s)
-
-    findClearWhiteList()
-    foreach(_:number,V:string = AASCostInfo["FilterList",table]){findIncludeClass(V)}
-    findExcludeEntity(entity())
-    findInSphere(entity():pos(),256)
-    findClipToPlayerProps(owner())
-    Entities = findToTable()
-
-    if(Entities:count() == 0){
-        printColor(vec(255,255,255),"No entities found!")
-        exit()
-    }
-    Breakdown = table()
-
-    foreach(_:number,V:entity = Entities){
-        local Type = V:type()
-        if( !Breakdown:exists(Type) ){ Breakdown[Type,table] = table() }
-        Breakdown[Type,table][Breakdown[Type,table]:count() + 1,entity] = V
-    }
-
-    printColor(vec(255,255,255),"Found " + Entities:count() + " entities. Calculating cost...")
-    timer("init",50)
-}
-
-if(duped()|dupefinished()){ printColor(vec(255,255,255),"The AAS Cost Calculator is still saved in your dupe! Be sure to remove this to save on a few points.") }
+if(duped()|dupefinished()){ printColor(vec(255,255,255), "The AAS Cost Calculator is still saved in your dupe! Be sure to remove this to save on a few points.") }
 
 function number isMissileAmmo(E:entity){
     local Bool = 0
@@ -71,7 +39,7 @@ function number isMissileAmmo(E:entity){
 
 function number calcCost(E:entity){
     local Cost = 0
-    local Class = E:type()
+    local Class = E:getClass()
     if(AASCostInfo["CalcSingleFilter",table]:exists(Class)){ Cost = AASCostInfo["CalcSingleFilter",table][Class,number] } else{ return 0 }
 
     switch(Class){
@@ -80,10 +48,11 @@ function number calcCost(E:entity){
             if(AASCostInfo["ACFGunCost",table]:exists(E:acfClass())){ClassMod = AASCostInfo["ACFGunCost",table][E:acfClass(),number]}
             Cost = ClassMod * E:acfCaliber()
         break
-        case "acf_armor", Cost = 0.1 + max(0.01,E:mass() / 500) break, # All 4 of these are calculated the same, since they can all be used as armor
+        case "acf_armor", Cost = 0.1 + max(0.01,E:mass() / 500) break, # All 5 of these are calculated the same, since they can all be used as armor
         case "prop_physics", Cost = 0.1 + max(0.01,E:mass() / 500) break,
         case "primitive_shape", Cost = 0.1 + max(0.01,E:mass() / 500) break,
         case "gmod_wire_gate", Cost = 0.1 + max(0.01,E:mass() / 500) break,
+        case "acf_baseplate", Cost = 0.1 + max(0.01,E:mass() / 500) break,
         case "acf_engine",
             Cost = max(5,(E:acfMaxTorque() / 160) + (E:acfMaxPower() / 80))
         break,
@@ -117,9 +86,6 @@ function number calcCost(E:entity){
         case "acf_turret_gyro",
             Cost = E:acfIsGyroDual() ? 8 : 4
         break,
-        case "acf_turret_computer",
-            Cost = 5
-        break,
         case "acf_turret_motor",
             local MotorData = E:acfGetTurretMotorData()
             Cost = 2 * MotorData["CompSize",number]
@@ -128,38 +94,79 @@ function number calcCost(E:entity){
     return Cost
 }
 
-if(clk("init")){
-    TotalCost = 0
-    CostBreakdown = table()
-    Keys = Breakdown:keys()
+if(first()){
+    AASCostInfo = table()
+    RunTimer = ""
 
-    KeyI = 1
-    ValI = 1
-    Run = 1
-}
+    # These tables should be populated automatically when the script is copied from the server, if they are empty you need to let a developer know, or get a new copy!
+    AASCostInfo["FilterList",table] = table(%s)
+    AASCostInfo["CalcSingleFilter",table] = table(%s)
+    AASCostInfo["ACFGunCost",table] = table(%s)
+    AASCostInfo["ACFAmmoModifier",table] = table(%s)
+    AASCostInfo["ACFMissileModifier",table] = table(%s)
+    AASCostInfo["SpecialModelFilter",table] = table(%s)
+    AASCostInfo["ACFRadars",table] = table(%s)
 
-if(Run){interval(50)}
-while(Run & perf(100)){
-    local Key = Keys[KeyI,string]
-    local T = Breakdown[Key,table]
-    local E = T[ValI,entity]
-    
-    if(!CostBreakdown:exists(Key)){CostBreakdown[Key,number] = 0}
+    findClearWhiteList()
+    foreach(_:number,V:string = AASCostInfo["FilterList",table]){findIncludeClass(V)}
+    findExcludeEntity(entity())
+    findInSphere(entity():pos(),256)
+    findClipToPlayerProps(owner())
+    Entities = findToTable()
 
-    local Cost = calcCost(E)
-    CostBreakdown[Key,number] = CostBreakdown[Key,number] + Cost
-    TotalCost += Cost
-
-    ValI++
-    if(ValI > T:count()){ValI = 1 KeyI++}
-    if(KeyI > Breakdown:count()){Run = 0 timer("finish",50)}
-}
-
-if(clk("finish")){
-    printColor(vec(255,255,255),"+ COST BREAKDOWN")
-    foreach(K:string,N:number = CostBreakdown){
-        if(N == 0){CostBreakdown:remove(K)}else{printColor(vec(255,255,255),"| " + K + ": ",vec(255,127,127),round(N,2))}
+    if(Entities:count() == 0){
+        printColor(vec(255,255,255),"No entities found!")
+        exit()
     }
-    TotalCost = ceil(TotalCost)
-    printColor(vec(255,255,255),"+ TOTAL COST: ",vec(255,0,0),TotalCost)
+    Breakdown = table()
+
+    foreach(_:number,V:entity = Entities){
+        local Type = V:getClass()
+        if( !Breakdown:exists(Type) ){ Breakdown[Type,table] = table() }
+        Breakdown[Type,table][Breakdown[Type,table]:count() + 1,entity] = V
+    }
+
+    printColor(vec(255,255,255),"Found " + Entities:count() + " entities. Calculating cost...")
+    
+    timer(0.05, function(){
+        TotalCost = 0
+        CostBreakdown = table()
+        Keys = Breakdown:keys()
+
+        KeyI = 1
+        ValI = 1
+
+        RunTimer = timer(0.01, 0, function(){
+            while(perf(100)){
+                local Key = Keys[KeyI,string]
+                local T = Breakdown[Key,table]
+                local E = T[ValI,entity]
+
+                if(!CostBreakdown:exists(Key)){CostBreakdown[Key,number] = 0}
+
+                local Cost = calcCost(E)
+                CostBreakdown[Key,number] = CostBreakdown[Key,number] + Cost
+                TotalCost += Cost
+
+                ValI++
+                if(ValI > T:count()){ValI = 1 KeyI++}
+                if(KeyI > Breakdown:count()){
+                    timerStop(RunTimer)
+
+                    timer(0.05, function(){
+                        printColor(vec(255,255,255),"+ COST BREAKDOWN")
+
+                        foreach(K:string,N:number = CostBreakdown){
+                            if(N == 0){CostBreakdown:remove(K)}else{printColor(vec(255,255,255),"| " + K + ": ",vec(255,127,127),round(N,2))}
+                        }
+                        TotalCost = ceil(TotalCost)
+
+                        printColor(vec(255,255,255),"+ TOTAL COST: ",vec(255,0,0),TotalCost)
+                    })
+
+                    break
+                }
+            }
+        })
+    })
 }

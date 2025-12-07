@@ -43,10 +43,8 @@ net.Receive("AAS.CostPanel", function()
 	local DupeCenter = net.ReadVector()
 	local CostBreakdown = net.ReadTable()
 	local Cost = net.ReadUInt(16)
-	local Highest = net.ReadUInt(12)
 
-	DupeCost.DupeCenter = DupeCenter
-	DupeCost.HighCenter = Vector(DupeCenter.x, DupeCenter.y, Highest)
+	DupeCost.HighCenter = DupeCenter
 	DupeCost.CostBreakdown = CostBreakdown
 	DupeCost.BreakdownCount = table.Count(CostBreakdown)
 	DupeCost.Cost = Cost

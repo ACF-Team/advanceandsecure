@@ -7,6 +7,7 @@ local NextReqCheck = ST()
 AAS.PlyReq = {}
 AAS.RequisitionCosts = {}
 
+-- When adding to this list, keep in mind if it does not have a special function below, it will use this cost. This is perfect for static costs.
 AAS.RequisitionCosts.CalcSingleFilter = {
 	gmod_wire_expression2	= 0.75,
 	starfall_processor		= 0.75,
@@ -25,24 +26,24 @@ AAS.RequisitionCosts.CalcSingleFilter = {
 	acf_turret				= 0,
 	acf_turret_motor		= 1,
 	acf_turret_gyro			= 1,
-	acf_turret_computer		= 1,
+	acf_turret_computer		= 5,
 	acf_baseplate			= 1,
 	acf_controller			= 0.75,
 	acf_crew				= 1,
-	acf_groundloader		= 1,
+	acf_groundloader		= 20,
 }
 
 AAS.RequisitionCosts.ACFGunCost = { -- anything not on here costs 1
 	SB	= 1, -- old smoothbores, leaving
-	C	= 0.5,
-	SC	= 0.3,
-	AC	= 1.2,
-	LAC	= 1.1,
-	HW	= 0.75,
-	MO	= 0.75,
-	RAC	= 2,
-	SA	= 1,
-	AL	= 0.8,
+	C	= 0.4,
+	SC	= 0.275,
+	AC	= 1.1,
+	LAC	= 1,
+	HW	= 0.5,
+	MO	= 0.35,
+	RAC	= 1.75,
+	SA	= 0.55,
+	AL	= 0.6,
 	GL	= 0.5,
 	MG	= 0.25,
 	SL	= 0.02,
@@ -50,15 +51,15 @@ AAS.RequisitionCosts.ACFGunCost = { -- anything not on here costs 1
 }
 
 AAS.RequisitionCosts.ACFAmmoModifier = { -- Anything not in here is 0.2
-	AP		= 0.4,
-	APCR	= 0.6,
-	APDS	= 0.8,
-	APFSDS	= 1,
-	APHE	= 0.5,
+	AP		= 0.3,
+	APCR	= 0.5,
+	APDS	= 0.9,
+	APFSDS	= 1.2,
+	APHE	= 0.4,
 	HE		= 0.35,
-	HEAT	= 0.65,
-	HEATFS	= 0.85,
-	FL		= 0.25,
+	HEAT	= 0.5,
+	HEATFS	= 1.1,
+	FL		= 0.2,
 	HP		= 0.1,
 	SM		= 0.1,
 	GLATGM	= 1.5,
@@ -71,10 +72,10 @@ AAS.RequisitionCosts.ACFMissileModifier = { -- Default 5
 	ARM		= 2.5,
 	ARTY	= 6,
 	BOMB	= 4, -- Dumb bomb
-	FFAR	= 2,
+	FFAR	= 1,
 	GBOMB	= 5, -- Glide bomb
-	GBU		= 7.5, -- Guided bomb
-	SAM		= 2.5,
+	GBU		= 6, -- Guided bomb
+	SAM		= 2,
 	UAR		= 3,
 }
 
@@ -99,51 +100,53 @@ AAS.RequisitionCosts.ACFRadars = { -- Should be prohibitively expensive, default
 }
 
 AAS.RequisitionCosts.SpecialModelFilter = { -- any missile rack not in here costs 10 points
-	["models/failz/b8.mdl"]			= 20,
-	["models/failz/lau_61.mdl"]		= 15,
-	["models/failz/ub_16.mdl"]		= 15,
-	["models/failz/ub_32.mdl"]		= 20,
+	-- These small racks Im just going to compare against 70mm and scale cost, per missile slot
+
+	["models/missiles/launcher7_40mm.mdl"]	= 4,
+	["models/failz/ub_16.mdl"]		= 13,
+	["models/failz/ub_32.mdl"]		= 26,
+	["models/missiles/launcher7_70mm.mdl"]	= 7,
+	["models/failz/lau_61.mdl"]		= 19,
+	["models/failz/b8.mdl"]			= 22.8,
+
 	["models/ghosteh/lau10.mdl"]	= 15,
 
-	["models/missiles/rk3uar.mdl"]	= 15,
+	["models/missiles/rk3uar.mdl"]	= 9,
 
-	["models/spg9/spg9.mdl"]		= 7.5,
+	["models/spg9/spg9.mdl"]		= 5,
 
-	["models/kali/weapons/kornet/parts/9m133 kornet tube.mdl"] = 15,
+	["models/kali/weapons/kornet/parts/9m133 kornet tube.mdl"] = 12.5,
 	["models/missiles/9m120_rk1.mdl"]	= 15,
-	["models/missiles/at3rs.mdl"]		= 10,
-	["models/missiles/at3rk.mdl"]		= 10,
+	["models/missiles/at3rs.mdl"]		= 4,
+	["models/missiles/at3rk.mdl"]		= 4,
 
 	-- BIG rack, can hold lots of boom
-	["models/missiles/6pod_rk.mdl"]		= 25,
+	["models/missiles/6pod_rk.mdl"]		= 20,
 
 	-- YUGE fuckin tube, launches a 380mm rocket
-	["models/launcher/rw61.mdl"]		= 35,
+	["models/launcher/rw61.mdl"]		= 30,
 
-	["models/missiles/agm_114_2xrk.mdl"]	= 15,
+	["models/missiles/agm_114_2xrk.mdl"]	= 10,
 	["models/missiles/agm_114_4xrk.mdl"]	= 20,
 
-	["models/missiles/launcher7_40mm.mdl"]	= 12,
-	["models/missiles/launcher7_70mm.mdl"]	= 16,
-
-	["models/missiles/bgm_71e_round.mdl"]	= 15,
-	["models/missiles/bgm_71e_2xrk.mdl"]	= 17.5,
+	["models/missiles/bgm_71e_round.mdl"]	= 5,
+	["models/missiles/bgm_71e_2xrk.mdl"]	= 10,
 	["models/missiles/bgm_71e_4xrk.mdl"]	= 20,
 
-	["models/missiles/fim_92_1xrk.mdl"]		= 7.5,
-	["models/missiles/fim_92_2xrk.mdl"]		= 10,
-	["models/missiles/fim_92_4xrk.mdl"]		= 15,
+	["models/missiles/fim_92_1xrk.mdl"]		= 2.5,
+	["models/missiles/fim_92_2xrk.mdl"]		= 5,
+	["models/missiles/fim_92_4xrk.mdl"]		= 10,
 
-	["models/missiles/9m31_rk1.mdl"]	= 10,
+	["models/missiles/9m31_rk1.mdl"]	= 7.5,
 	["models/missiles/9m31_rk2.mdl"]	= 15,
-	["models/missiles/9m31_rk4.mdl"]	= 20,
+	["models/missiles/9m31_rk4.mdl"]	= 30,
 
-	["models/missiles/bomb_3xrk.mdl"]	= 20,
+	["models/missiles/bomb_3xrk.mdl"]	= 9,
 
-	["models/missiles/rkx1_sml.mdl"]	= 10,
-	["models/missiles/rkx1.mdl"]		= 10,
-	["models/missiles/rack_double.mdl"]	= 15,
-	["models/missiles/rack_quad.mdl"]	= 20
+	["models/missiles/rkx1_sml.mdl"]	= 3,
+	["models/missiles/rkx1.mdl"]		= 3,
+	["models/missiles/rack_double.mdl"]	= 6,
+	["models/missiles/rack_quad.mdl"]	= 12
 }
 
 local CostFilter = {}
@@ -181,9 +184,6 @@ end
 CostFilter["acf_turret_gyro"] = function(E)
 	return E.IsDual and 8 or 4
 end
-CostFilter["acf_turret_computer"] = function() return 5 end
-
-CostFilter["acf_groundloader"] = function() return 20 end
 
 local ArmorCalc = function(E)
 	local phys = E:GetPhysicsObject()
@@ -208,6 +208,8 @@ end
 
 do
 	do	-- Functions
+
+		-- Calculates cost of a single entity
 		function AAS.Funcs.CalcCost(E)
 			local Class = E:GetClass()
 			if not AAS.RequisitionCosts.CalcSingleFilter[Class] then return 0 end
@@ -220,6 +222,7 @@ do
 			return Cost
 		end
 
+		-- Iterates across all entities owned by players and puts the current cost against them (not charged, just limiting)
 		function AAS.Funcs.CalcRequisition()
 			if ST() < NextReqCheck then return end
 			local Ents = {}
@@ -268,7 +271,8 @@ do
 			NextReqCheck = ST() + 1
 		end
 
-		function AAS.Funcs.CalcSingleRequisition(Ents)
+		-- Calculates cost of a group of entities
+		function AAS.Funcs.CalcContraptionRequisition(Ents)
 			local TotalCost = 0
 			local CostBreakdown = {}
 			local DupeCenter = nil
@@ -296,10 +300,11 @@ do
 				TotalCost = TotalCost + Cost
 			end
 
-			TotalCost = math.ceil(TotalCost)
-			DupeCenter = DupeCenter and DupeCenter / EntCount or vector_origin
+			TotalCost		= math.ceil(TotalCost)
+			DupeCenter		= (DupeCenter and DupeCenter / EntCount) or vector_origin
+			DupeCenter.z	= Highest
 
-			return TotalCost, CostBreakdown, DupeCenter, Highest
+			return TotalCost, CostBreakdown, DupeCenter
 		end
 	end
 
@@ -313,13 +318,12 @@ do
 			local Ply = Dupe[1].Player
 			if not IsValid(Ply) then return end
 
-			local Cost, Breakdown, DupeCenter, Highest = AAS.Funcs.CalcSingleRequisition(DupeEnts)
+			local Cost, Breakdown, DupeCenter = AAS.Funcs.CalcContraptionRequisition(DupeEnts)
 
 			net.Start("AAS.CostPanel")
 				net.WriteVector(DupeCenter)
 				net.WriteTable(Breakdown)
 				net.WriteUInt(Cost, 16)
-				net.WriteUInt(Highest, 12)
 			net.Send(Ply)
 
 			AAS.Funcs.CalcRequisition()
