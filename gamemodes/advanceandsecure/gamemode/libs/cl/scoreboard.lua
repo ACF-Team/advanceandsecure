@@ -636,5 +636,7 @@ function GM:ScoreboardShow()
 end
 
 function GM:ScoreboardHide()
+	if not scoreboard.hide then return end
+
 	scoreboard:hide()
 end
