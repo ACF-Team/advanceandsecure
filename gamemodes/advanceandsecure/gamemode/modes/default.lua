@@ -14,8 +14,9 @@ AAS.SettingsFuncs.Color(DefaultMode, "OPFOR Color", Vector(255, 87, 87), "Color 
 AAS.SettingsFuncs.Number(DefaultMode, "Max Requisition", 500, 50, 750, "Maximum amount of accruable requisition", -10)
 AAS.SettingsFuncs.Number(DefaultMode, "Max Rate", 50, 5, 200, "Maximum rate (at max karma) of requisition per pay cycle", -9)
 AAS.SettingsFuncs.Number(DefaultMode, "Tickets", 300, 50, 1000, "Maximum number of tickets per team", -8)
-AAS.SettingsFuncs.Bool(DefaultMode, "Death ticket loss", true, "Whether or not dying causes the team to lose a ticket", -7)
-AAS.SettingsFuncs.Bool(DefaultMode, "Non-linear", false, "Enable/disable point linking", -6)
+AAS.SettingsFuncs.Number(DefaultMode, "Year", 1970, 1900, 2050, "The current year, for limiting weaponry", -7)
+AAS.SettingsFuncs.Bool(DefaultMode, "Death ticket loss", true, "Whether or not dying causes the team to lose a ticket", -6)
+AAS.SettingsFuncs.Bool(DefaultMode, "Non-linear", false, "Enable/disable point linking", -5)
 
 DefaultMode.Init	= function(MapData)	-- Setup whatever settings for the map to run here. Should be a clean slate
 	PrintTable(MapData)
@@ -131,7 +132,7 @@ DefaultMode.CheckWin	= function() -- Called when checking to see if the round sh
 	end
 end
 
-DefaultMode.Payday		= function(ply)
+DefaultMode.Payday		= function(ply)	-- A player is not always given, for example round start
 	local MaxGain = AAS.Funcs.GetSetting("Max Rate", 50)
 	local Time = SysTime()
 

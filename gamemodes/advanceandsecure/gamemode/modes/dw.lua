@@ -17,9 +17,10 @@ GMT.Name	= "Diesel wars"
 GMT.Desc	= "Resource-based team deathmatch"
 
 -- Override the default settings for these, to allow much higher limits
-AAS.SettingsFuncs.Number(GMT, "Min Requisition", 50, 25, 200, "Minimum amount of requisition", 11) -- Game will try to keep this amount on a player during each payday; incentivizes resource packages
+AAS.SettingsFuncs.Number(GMT, "Min Requisition", 50, 25, 200, "Minimum amount of requisition", 11)			-- Game will try to keep this amount on a player during each payday; incentivizes resource packages
 AAS.SettingsFuncs.Number(GMT, "Max Requisition", 500, 50, 1000, "Maximum amount of accruable requisition", -10)
 AAS.SettingsFuncs.Number(GMT, "Max Rate", 25, 5, 50, "Rate of requisition per pay cycle", -9)
+AAS.SettingsFuncs.Number(GMT, "Tickets", 100, 25, 300, "Maximum number of tickets per team", -8)	-- Since the only way tickets are deducted is from kills/deaths, we need a lower limit
 AAS.SettingsFuncs.Flag(GMT,	"No connection")
 
 GMT.Init	= function()	-- Setup whatever settings for the map to run here. Should be a clean slate

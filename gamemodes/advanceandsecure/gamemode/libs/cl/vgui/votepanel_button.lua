@@ -8,7 +8,7 @@ local NoMap	= Material("materials/gui/noicon.png", "")
 local baseColor	= Color(65, 65, 65)
 local selectColor	= Color(65, 255, 65)
 local white		= Color(255, 255, 255)
-local transparentgray	= Color(65, 65, 65, 127)
+local transparentgray	= Color(28, 28, 28, 200)
 
 --[[
 
@@ -69,11 +69,12 @@ function PANEL:Paint(w, h)
 	end
 
 	surface.SetDrawColor(transparentgray)
-	surface.DrawRect(0, 0, w, 16)
-	draw.SimpleTextOutlined(self.map, "BasicFontLarge", w / 2, 8, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
-	surface.DrawRect(0, h - 16, w, 16)
-	draw.SimpleTextOutlined(self.mode, "BasicFontLarge", w / 2, h - 8, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+	surface.DrawRect(0, 0, w, 18)
+	draw.SimpleTextOutlined(self.map, "BasicFontLarge", w / 2, 9, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+	surface.DrawRect(0, h - 28, w, 28)
+	draw.SimpleTextOutlined(self.mode, "BasicFontSlightlyLarger", w - 2, h - 14, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER, 1, color_black)
 
+	draw.SimpleTextOutlined("Votes: " .. self.count, "BasicFontSlightlyLarger", 2, h - 14, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 1, color_black)
 end
 
 function PANEL:PerformLayout()

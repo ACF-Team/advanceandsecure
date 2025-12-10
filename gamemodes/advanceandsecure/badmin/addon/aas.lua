@@ -38,3 +38,17 @@ cmdSettings = {
 	["RCONCanUse"] = true
 }
 BAdmin.Utilities.addCommand("aas_save", callfunc, cmdSettings)
+
+
+function callfunc() -- Save
+	AAS.Funcs.openVotes()
+
+	return true
+end
+
+cmdSettings = {
+	["Help"] = "Opens the votemap menu.",
+	["MinimumPrivilege"] = 2,
+	["RCONCanUse"] = true
+}
+BAdmin.Utilities.addCommand("aas_openvote", callfunc, cmdSettings)

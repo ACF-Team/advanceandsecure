@@ -3,35 +3,37 @@ MsgN("+ Vote system loaded")
 local CT = CurTime
 
 if SERVER then
-	AAS.Voting = false
-	AAS.RTV = false
-	AAS.RoundCounter = 1
+	AAS.Voting			= false
+	AAS.RoundCounter	= 1
 	team.SetScore(1, 0)
 	team.SetScore(2, 0)
 
-	local MapLookup	= {}
-	local CurrentVoteList = {}
-	local VoteData = {}
+	local MapLookup		= {}
+	local VoteData		= {}
+	local QueueUpdate	= false
+	local Counts		= {}
 
 	local function UpdateVotes()
-		local Counts = {}
+		Counts = {}
 		for _, v in pairs(VoteData) do
 			Counts[tostring(v)] = (Counts[tostring(v)] or 0) + 1
 		end
 
-		for i = 1, 5, 1 do
-			SetGlobal2Int("vote_" .. i, 0)
-		end
+		if not QueueUpdate then
+			timer.Simple(0.2, function()
+				net.Start("AAS.ReceiveVote")
+					net.WriteTable(Counts)
+				net.Broadcast()
 
-		for k, v in pairs(Counts) do
-			SetGlobal2Int("vote_" .. k, v or 0)
+				QueueUpdate = false
+			end)
+
+			QueueUpdate = true
 		end
 	end
 
 	local Maps = {}
 	local function OpenVotes()
-		local Choices	= {}
-
 		if table.IsEmpty(Maps) then
 			local _, MapDirs = file.Find("aas/maps/*", "DATA")
 
@@ -48,26 +50,16 @@ if SERVER then
 				end
 			end
 
-			if #Maps == 0 then AAS.Funcs.finishVote(5) return end
+			if #Maps == 0 then AAS.Funcs.finishVote(-1) return end
 		end
 
-		for i = 1, math.min(#Maps, 3), 1 do
-			local Pick = math.random(1, #Maps)
-			Choices[i] = Maps[Pick]
-			table.remove(Maps, Pick)
-		end
-
-		AAS.Voting = true
+		AAS.Voting	= true
+		QueueUpdate	= false
 		SetGlobalBool("AAS.Voting", AAS.Voting)
-
-		AAS.RTV = (#Maps > 0)
-
-		CurrentVoteList = table.Copy(Choices)
 
 		net.Start("AAS.OpenVotes")
 			net.WriteFloat(CT() + 30)
-			net.WriteBool(AAS.RTV)
-			net.WriteTable(Choices)
+			net.WriteTable(Maps)
 		net.Broadcast()
 
 		VoteData = {}
@@ -79,23 +71,24 @@ if SERVER then
 	AAS.Funcs.openVotes = OpenVotes
 
 	local function FinishVote(Choice)
-		if Choice <= 3 then
-			if #CurrentVoteList == 0 then AAS.Funcs.finishVote(5) return end -- Just more insurance, if somehow we managed to get this vote here, we'll safely restart the map
-			local MapReturn = MapLookup[CurrentVoteList[math.min(Choice, #CurrentVoteList)]]
-			AAS.FirstLoad	= true
-			AAS.ModeCV:SetString(MapReturn.mode)
-			RunConsoleCommand("changelevel", MapReturn.map)
-		elseif Choice == 4 then
-			aasMsg({Colors.BasicCol, "Rerolling the vote, old choices are no longer available!"})
+		if #Maps == 0 then Choice = -1 end
 
-			OpenVotes()
-		elseif Choice == 5 then
+		if Choice == -1 then	-- Restart the map
 			aasMsg({Colors.BasicCol, "Refreshing the map!"})
 
 			AAS.Funcs.ScrambleTeams()
 
 			AAS.Funcs.FullReload()
+
+			return
+		elseif Choice == -2 then	-- Pick a random since no votes were received
+			Choice	= Maps[math.random(1, #Maps)]
 		end
+
+		local MapReturn = MapLookup[Choice]
+		AAS.FirstLoad	= true
+		AAS.ModeCV:SetString(MapReturn.mode)
+		RunConsoleCommand("changelevel", MapReturn.map)
 	end
 	AAS.Funcs.finishVote = FinishVote
 
@@ -104,25 +97,21 @@ if SERVER then
 		SetGlobalBool("AAS.Voting", AAS.Voting)
 
 		aasMsg({Colors.BasicCol, "Counting votes!"})
-		local Count = {}
+		local FinalCount = {}
 
 		if table.Count(VoteData) == 0 then
-			if #CurrentVoteList == 0 then
-				AAS.Funcs.finishVote(5) -- just refresh the map, dunno how we got here
-			else
-				AAS.Funcs.finishVote(math.random(1, 3))
+			AAS.Funcs.finishVote(-2)
 
-				aasMsg({Colors.BasicCol, "No votes received, picking randomly!"})
-				return
-			end
+			aasMsg({Colors.BasicCol, "No votes received, picking randomly!"})
+			return
 		end
 
 		for _, v in pairs(VoteData) do
-			Count[v] = (Count[v] or 0) + 1
+			FinalCount[v] = (FinalCount[v] or 0) + 1
 		end
 
-		local Highest = Count[table.GetWinningKey(Count)]
-		local Ties = table.KeysFromValue(Count, Highest)
+		local Highest = FinalCount[table.GetWinningKey(FinalCount)]
+		local Ties = table.KeysFromValue(FinalCount, Highest)
 
 		AAS.Funcs.finishVote(Ties[math.random(1, #Ties)])
 	end
@@ -134,7 +123,7 @@ if SERVER then
 			-- Receives vote info and updates clients about that, otherwise will send a rude message to anyone thats trying to circumvent it
 			net.Receive("AAS.ReceiveVote", function(_, ply)
 				if not AAS.Voting then aasMsg({Colors.ErrorCol, "Bugger off"}, ply) return end
-				local Choice = net.ReadUInt(3)
+				local Choice = net.ReadString()
 
 				VoteData[ply] = Choice
 
@@ -144,191 +133,103 @@ if SERVER then
 	end
 
 else	-- Cient
-	local Choices = {}
-	local RTV = false
-	local Time = 0
-
-	--[[
-	local testpanel
-	concommand.Add("aas_vguitest", function()
-		if testpanel then testpanel:Remove() end
-
-		local maplist = {"gm_baik_coast_03", "gm_bluehills_test3", "emp_silo_rc5", "emp_fuel_a3_2013", "emp_blackmountain", "gm_diprip_refinery", "gm_diprip_dam"}
-
-		testpanel	= vgui.Create("DFrame")
-		testpanel:SetSize(ScrW() * 0.5, ScrH() * 0.75)
-		testpanel:Center()
-		testpanel:MakePopup()
-
-		local scrollpanel	= vgui.Create("DScrollPanel", testpanel)
-		scrollpanel:Dock(FILL)
-
-		local iconlist		= vgui.Create("DIconLayout", scrollpanel)
-		iconlist:Dock(FILL)
-		iconlist:SetSpaceX(6)
-		iconlist:SetSpaceY(6)
-
-		for i = 1, 20 do
-			local btn = iconlist:Add("VoteButton")
-			btn:SetSize(300, 320)
-			if maplist[i] then
-				btn:SetMap(maplist[i], "fuck")
-			else
-				btn:SetMap("map_" .. i, "fuck")
-			end
-
-			if i == 1 then btn:SetSelected(true) end
-		end
-	end)
-	]]
+	local Choices		= {}
+	local Time			= 0
+	local VotePanel
 
 	local function SendVote(choice)
 		net.Start("AAS.ReceiveVote")
-			net.WriteUInt(choice, 3)
+			net.WriteString(choice)
 		net.SendToServer()
 	end
-
-	--[[
-		New vote panel:
-		Start with a DFrame that encompasses most of the screen, then fill with a DScrollPanel so we have a scrollbar
-		Next, fill *that* with DIconLayout; this is a nice way of having a scrollable grid
-		Then, add all of the buttons to that; as they are added, they are automatically aligned
-		> https://wiki.facepunch.com/gmod/DIconLayout
-
-
-	]]
 
 	if VotePanel then VotePanel:Remove() end
 	local function VoteMenu()
 		if VotePanel then VotePanel:Remove() end
 
-		VotePanel = vgui.Create("DFrame")
-		VotePanel:SetSize(300, 300)
+		timer.Simple(Time - CT(), function()
+			if VotePanel then VotePanel:Remove() end
+		end)
+
+		VotePanel			= vgui.Create("DFrame")
+		VotePanel.btnindex	= {}
+		local sizew	= math.floor((ScrW() * 0.5) / 312)
+		VotePanel:SetSize(312 * sizew, ScrH() * 0.75)
 		VotePanel:Center()
-		VotePanel:SetDraggable(false)
+		VotePanel:SetDraggable()
 		VotePanel:ShowCloseButton(false)
 		VotePanel:MakePopup()
 		VotePanel:SetKeyboardInputEnabled(false)
+		VotePanel:SetTitle("")
+
 		VotePanel.Paint = function(_, w, h)
 			surface.SetDrawColor(75, 75, 75)
 			surface.DrawRect(0, 0, w, h)
 
 			surface.SetDrawColor(25, 25, 25)
-			surface.DrawRect(0, 0, w, 36)
+			surface.DrawRect(0, 0, w, 24)
 
-			draw.SimpleText("MAP VOTING", "BasicFontLarge", w / 2, 10, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			local TimeLeft = math.Clamp(math.Round(Time - CT(), 1), 0, 30)
 
 			if TimeLeft < 10 then surface.SetDrawColor(200, 0, 0) else surface.SetDrawColor(0, 200, 0) end
-			surface.DrawRect(0, h - 12, w * (TimeLeft / 30), 12)
-			draw.SimpleText("TIME REMAINING: " .. tostring(TimeLeft), "BasicFont", w / 2, h, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+
+			surface.DrawRect(0, 0, w * (TimeLeft / 30), 24)
+
+			draw.SimpleTextOutlined("MAP VOTING", "BasicFontLarge", w / 2, 12, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+
+			draw.SimpleTextOutlined("TIME REMAINING: " .. tostring(TimeLeft), "BasicFontLarge", 4, 12, Colors.White, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 1, color_black)
 		end
-		VotePanel:SetTitle("")
 
-		local shift = 0
-		local selected = 0
-		for k, v in ipairs(Choices) do
-			local button = vgui.Create("DButton", VotePanel)
-			button:SetSize(250, 30)
-			button:SetPos(25, 60 + shift)
-			button.ID = v
-			button.Index = k
-			button:SetText("")
-			button.Paint = function(self, w, h)
-				surface.SetDrawColor(25, 25, 25)
-				surface.DrawRect(0, 0, w, h)
+		VotePanel.SetVote	= function(_, panel)
+			if VotePanel.selected then VotePanel.selected:SetSelected(false) end
+			panel:SetSelected(true)
 
-				if self:IsHovered() then
-					surface.SetDrawColor(0, 65, 0)
-					surface.DrawRect(4, 4, w - 8, h - 8)
-				end
+			VotePanel.selected = panel
+		end
 
-				if selected == self.Index then surface.SetDrawColor(0, 127, 0) else surface.SetDrawColor(100, 100, 100) end
-				surface.DrawRect(0, 0, h, h)
-
-				draw.SimpleText(tostring(GetGlobal2Int("vote_" .. self.Index, 0)), "BasicFontLarge", h / 2, h / 2, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-				draw.SimpleText(self.ID, "BasicFont14", h + 4, h / 2, Colors.White, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		VotePanel.UpdateVotes	= function(self, Votes)
+			for _, btn in pairs(self.btnindex) do
+				btn:SetCount(Votes[btn.map_index] or 0)
 			end
-			button.DoClick = function(self)
+		end
+
+		local scrollpanel	= vgui.Create("DScrollPanel", VotePanel)
+		scrollpanel:Dock(FILL)
+
+		local btnlist	= vgui.Create("DIconLayout", scrollpanel)
+		btnlist:Dock(FILL)
+		btnlist:SetSpaceX(12)
+		btnlist:SetSpaceY(12)
+
+		for _, map in ipairs(Choices) do
+			local btn = btnlist:Add("VoteButton")
+			btn:SetSize(300, 320)
+			btn.map_index	= map
+			VotePanel.btnindex[map] = btn
+			local breakdown	= string.Explode("/", map)
+
+			btn:SetMap(breakdown[1], breakdown[2])
+
+			btn.DoClick	= function(self)
 				if math.Clamp(math.Round(Time - CT(), 1), 0, 30) == 0 then VotePanel:Remove() return end
 				if not GetGlobalBool("AAS.Voting", false) then return end
-				selected = self.Index
-				SendVote(self.Index)
+
+				VotePanel:SetVote(self)
+
+				SendVote(self.map_index)
 			end
-
-			shift = shift + 40
-		end
-
-		if RTV then -- allow rock the vote
-			local button = vgui.Create("DButton", VotePanel)
-			button:SetSize(250, 30)
-			button:SetPos(25, 60 + shift)
-			button.ID = "Refresh the vote"
-			button.Index = 4
-			button:SetText("")
-			button.Paint = function(self, w, h)
-				surface.SetDrawColor(25, 25, 25)
-				surface.DrawRect(0, 0, w, h)
-
-				if self:IsHovered() then
-					surface.SetDrawColor(0, 65, 0)
-					surface.DrawRect(4, 4, w - 8, h - 8)
-				end
-
-				if selected == self.Index then surface.SetDrawColor(0, 127, 0) else surface.SetDrawColor(100, 100, 100) end
-				surface.DrawRect(0, 0, h, h)
-
-				draw.SimpleText(tostring(GetGlobal2Int("vote_" .. self.Index, 0)), "BasicFontLarge", h / 2, h / 2, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-				draw.SimpleText(self.ID, "BasicFont14", h + 4, h / 2, Colors.White, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-			end
-			button.DoClick = function(self)
-				if math.Clamp(math.Round(Time - CT(), 1), 0, 30) == 0 then VotePanel:Remove() return end
-				if not GetGlobalBool("AAS.Voting", false) then return end
-				selected = self.Index
-				SendVote(self.Index)
-			end
-
-			shift = shift + 40
-		end
-
-		local button = vgui.Create("DButton", VotePanel)
-		button:SetSize(250, 30)
-		button:SetPos(25, 60 + shift)
-		button.ID = "Reuse Current Map"
-		button.Index = 5
-		button:SetText("")
-		button.Paint = function(self, w, h)
-			surface.SetDrawColor(25, 25, 25)
-			surface.DrawRect(0, 0, w, h)
-
-			if self:IsHovered() then
-				surface.SetDrawColor(0, 65, 0)
-				surface.DrawRect(4, 4, w - 8, h - 8)
-			end
-
-			if selected == self.Index then surface.SetDrawColor(0, 127, 0) else surface.SetDrawColor(100, 100, 100) end
-			surface.DrawRect(0, 0, h, h)
-
-			draw.SimpleText(tostring(GetGlobal2Int("vote_" .. self.Index, 0)), "BasicFontLarge", h / 2, h / 2, Colors.White, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-			draw.SimpleText(self.ID, "BasicFont14", h + 4, h / 2, Colors.White, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		end
-		button.DoClick = function(self)
-			if math.Clamp(math.Round(Time - CT(), 1), 0, 30) == 0 then VotePanel:Remove() return end
-			if not GetGlobalBool("AAS.Voting", false) then return end
-			selected = self.Index
-			SendVote(self.Index)
 		end
 	end
 
 	-- Opens the vote menu, with a timer as well as if "rock the vote" can occur
 	net.Receive("AAS.OpenVotes", function()
-		Time = net.ReadFloat()
-		RTV = net.ReadBool()
-		Choices = net.ReadTable()
+		Time	= net.ReadFloat()
+		Choices	= net.ReadTable()
 
 		VoteMenu()
+	end)
+
+	net.Receive("AAS.ReceiveVote", function()
+		if VotePanel then VotePanel:UpdateVotes(net.ReadTable(false)) end
 	end)
 end

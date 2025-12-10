@@ -104,6 +104,23 @@ surface.CreateFont("BasicFontLarge", {
 	outline = false,
 } )
 
+surface.CreateFont("BasicFontSlightlyLarger", {
+	font = BaseFont,
+	size = 32,
+	weight = 600,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = false,
+	additive = false,
+	outline = false,
+} )
+
 surface.CreateFont("BasicFontExtraLarge", {
 	font = BaseFont,
 	size = 64,
