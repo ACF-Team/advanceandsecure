@@ -32,9 +32,9 @@ if SERVER then
 		if Diff == 0 then return true end
 
 		if Reason then
-			aasMsg({Colors.BasicCol, "You were charged ", Colors.BadCol, tostring(math.abs(Diff)), Colors.BasicCol, " points for: " .. Reason .. ". Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
+			AAS.Funcs.Msg({Colors.BasicCol, "You were charged ", Colors.BadCol, tostring(math.abs(Diff)), Colors.BasicCol, " points for: " .. Reason .. ". Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
 		else
-			aasMsg({Colors.BasicCol, "You were charged ", Colors.BadCol, tostring(math.abs(Diff)), Colors.BasicCol, " points. Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
+			AAS.Funcs.Msg({Colors.BasicCol, "You were charged ", Colors.BadCol, tostring(math.abs(Diff)), Colors.BasicCol, " points. Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
 		end
 
 		return true
@@ -54,9 +54,9 @@ if SERVER then
 		if Diff == 0 then return true end
 
 		if Reason then
-			aasMsg({Colors.BasicCol, "You received ", Colors.GoodCol, tostring(math.abs(Diff)), Colors.BasicCol, " points for: " .. Reason .. ". Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
+			AAS.Funcs.Msg({Colors.BasicCol, "You received ", Colors.GoodCol, tostring(math.abs(Diff)), Colors.BasicCol, " points for: " .. Reason .. ". Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
 		else
-			aasMsg({Colors.BasicCol, "You received ", Colors.GoodCol, tostring(math.abs(Diff)), Colors.BasicCol, " points. Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
+			AAS.Funcs.Msg({Colors.BasicCol, "You received ", Colors.GoodCol, tostring(math.abs(Diff)), Colors.BasicCol, " points. Current amount: ", Colors.GoodCol, tostring(self:GetRequisition())}, self)
 		end
 
 		return true

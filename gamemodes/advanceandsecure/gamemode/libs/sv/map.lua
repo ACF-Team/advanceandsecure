@@ -5,7 +5,7 @@ local ST		= SysTime
 AAS.Funcs.SetEditMode = function(bool)
 	SetGlobalBool("EditMode", bool)
 
-	aasMsg({Colors.BasicCol, "Game Editmode has been set to ", tostring(GetGlobalBool("EditMode", false)), "."})
+	AAS.Funcs.Msg({Colors.BasicCol, "Game Editmode has been set to ", tostring(GetGlobalBool("EditMode", false)), "."})
 
 	if bool == true then
 		for _, v in player.Iterator() do
@@ -111,7 +111,7 @@ AAS.Funcs.SaveMap	= function()
 			table.insert(Data.Points, PointData)
 		end
 	else
-		aasMsg({Colors.ErrorCol, "[AAS] No points detected! Aborting"})
+		AAS.Funcs.Msg({Colors.ErrorCol, "[AAS] No points detected! Aborting"})
 		return
 	end
 
@@ -126,7 +126,7 @@ AAS.Funcs.SaveMap	= function()
 			})
 		end
 	else
-		aasMsg({Colors.ErrorCol, "[AAS] No spawn points detected! Aborting"})
+		AAS.Funcs.Msg({Colors.ErrorCol, "[AAS] No spawn points detected! Aborting"})
 		return
 	end
 
@@ -221,9 +221,11 @@ AAS.Funcs.LoadMap	= function(MapData)
 			if v:GetIsSpawn() then
 				if v:GetTeamSpawn() == 1 and not SpawnA then
 					print("Located SpawnA")
+
 					SpawnA = v
 				elseif v:GetTeamSpawn() == 2 and not SpawnB then
 					print("Located SpawnB")
+
 					SpawnB = v
 				end
 			end
@@ -233,6 +235,7 @@ AAS.Funcs.LoadMap	= function(MapData)
 
 		if not (IsValid(SpawnA) and IsValid(SpawnB)) then
 			ErrorNoHalt("Unable to locate both spawns!")
+
 			return
 		end
 
@@ -257,7 +260,7 @@ AAS.Funcs.LoadMap	= function(MapData)
 	end)
 
 	if GetGlobalBool("EditMode", false) then
-		aasMsg({Colors.ErrorCol, "The game has been loaded with EditMode enabled!"})
+		AAS.Funcs.Msg({Colors.ErrorCol, "The game has been loaded with EditMode enabled!"})
 	end
 
 	-- Call the gamemode specific load function, incase theres anything extra

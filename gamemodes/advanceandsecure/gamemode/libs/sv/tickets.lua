@@ -1,7 +1,7 @@
 MsgN("+ Tickets loaded")
 
 AAS.Funcs.FlipTeams	= function()
-	aasMsg({Colors.BasicCol, "Switching the teams!"})
+	AAS.Funcs.Msg({Colors.BasicCol, "Switching the teams!"})
 
 	for _, v in player.Iterator() do
 		v:SetTeam((v:Team() == 1) and 2 or 1)
@@ -9,7 +9,7 @@ AAS.Funcs.FlipTeams	= function()
 end
 
 AAS.Funcs.ScrambleTeams	= function()
-	aasMsg({Colors.BasicCol, "Scrambling the teams!"})
+	AAS.Funcs.Msg({Colors.BasicCol, "Scrambling the teams!"})
 
 	local PlyList = player.GetAll()
 

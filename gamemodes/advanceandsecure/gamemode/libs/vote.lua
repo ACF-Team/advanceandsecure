@@ -4,14 +4,17 @@ local CT = CurTime
 
 if SERVER then
 	AAS.Voting			= false
+	AAS.OpenVoting		= false
 	AAS.RoundCounter	= 1
 	team.SetScore(1, 0)
 	team.SetScore(2, 0)
 
 	local MapLookup		= {}
 	local VoteData		= {}
+	local RTVVoteData	= {}
 	local QueueUpdate	= false
 	local Counts		= {}
+	local Maps			= {}
 
 	local function UpdateVotes()
 		Counts = {}
@@ -32,23 +35,58 @@ if SERVER then
 		end
 	end
 
-	local Maps = {}
+	local function ChangeMap(Map, Mode)
+		AAS.FirstLoad	= true
+
+		AAS.ModeCV:SetString(Mode)
+		RunConsoleCommand("changelevel", Map)
+	end
+	AAS.Funcs.changeMap	= ChangeMap
+
+	local function CompletelyRandomMap()
+		MapLookup	= {}
+		local _, MapDirs = file.Find("aas/maps/*", "DATA")
+
+		for _, map in pairs(MapDirs) do
+			local files = file.Find("aas/maps/" .. map .. "/*.txt", "DATA")
+
+			for _, f in pairs(files) do
+				local fin = string.StripExtension(f)
+
+				local index = map .. "/" .. fin
+				MapLookup[index]	= {map = map, mode = fin}
+			end
+		end
+
+		return table.Random(MapLookup)
+	end
+
+	AAS.Funcs.completelyRandomMap	= CompletelyRandomMap
+
+	local function PopulateMapList()
+		Maps	= {}
+
+		local _, MapDirs = file.Find("aas/maps/*", "DATA")
+
+		for _, map in pairs(MapDirs) do
+			local files = file.Find("aas/maps/" .. map .. "/*.txt", "DATA")
+
+			for _, f in pairs(files) do
+				local fin = string.StripExtension(f)
+				if (map == game.GetMap()) and (fin == AAS.ModeCV:GetString()) then continue end
+
+				local index = map .. "/" .. fin
+				table.insert(Maps, index)
+				MapLookup[index]	= {map = map, mode = fin}
+			end
+		end
+	end
+
+	AAS.Funcs.populateMapList	= PopulateMapList
+
 	local function OpenVotes()
 		if table.IsEmpty(Maps) then
-			local _, MapDirs = file.Find("aas/maps/*", "DATA")
-
-			for _, map in pairs(MapDirs) do
-				local files = file.Find("aas/maps/" .. map .. "/*.txt", "DATA")
-
-				for _, f in pairs(files) do
-					local fin = string.StripExtension(f)
-					if (map == game.GetMap()) and (fin == AAS.ModeCV:GetString()) then continue end
-
-					local index = map .. "/" .. fin
-					table.insert(Maps, index)
-					MapLookup[index]	= {map = map, mode = fin}
-				end
-			end
+			AAS.Funcs.populateMapList()
 
 			if #Maps == 0 then AAS.Funcs.finishVote(-1) return end
 		end
@@ -68,13 +106,13 @@ if SERVER then
 
 		timer.Simple(30, AAS.Funcs.countVotes)
 	end
-	AAS.Funcs.openVotes = OpenVotes
+	AAS.Funcs.openVotes	= OpenVotes
 
 	local function FinishVote(Choice)
 		if #Maps == 0 then Choice = -1 end
 
 		if Choice == -1 then	-- Restart the map
-			aasMsg({Colors.BasicCol, "Refreshing the map!"})
+			AAS.Funcs.Msg({Colors.BasicCol, "Refreshing the map!"})
 
 			AAS.Funcs.ScrambleTeams()
 
@@ -86,23 +124,22 @@ if SERVER then
 		end
 
 		local MapReturn = MapLookup[Choice]
-		AAS.FirstLoad	= true
-		AAS.ModeCV:SetString(MapReturn.mode)
-		RunConsoleCommand("changelevel", MapReturn.map)
+		AAS.Funcs.changeMap(MapReturn.map, MapReturn.mode)
 	end
-	AAS.Funcs.finishVote = FinishVote
+	AAS.Funcs.finishVote	= FinishVote
 
 	local function CountVotes()
 		AAS.Voting = false
 		SetGlobalBool("AAS.Voting", AAS.Voting)
 
-		aasMsg({Colors.BasicCol, "Counting votes!"})
+		AAS.Funcs.Msg({Colors.BasicCol, "Counting votes!"})
 		local FinalCount = {}
 
 		if table.Count(VoteData) == 0 then
+			AAS.Funcs.Msg({Colors.BasicCol, "No votes received, picking randomly!"})
+
 			AAS.Funcs.finishVote(-2)
 
-			aasMsg({Colors.BasicCol, "No votes received, picking randomly!"})
 			return
 		end
 
@@ -115,19 +152,70 @@ if SERVER then
 
 		AAS.Funcs.finishVote(Ties[math.random(1, #Ties)])
 	end
-	AAS.Funcs.countVotes = CountVotes
+	AAS.Funcs.countVotes	= CountVotes
+
+	local function UpdateRTV()
+		local MinPlayers	= math.max(math.floor(player.GetCount() / 2), 1)
+
+		local Count	= 0
+
+		for ply in pairs(RTVVoteData) do
+			if IsValid(ply) then Count = Count + 1 end
+		end
+
+		if Count >= MinPlayers then
+			AAS.Funcs.Msg({Colors.BasicCol, "Votemap menu opened!"})
+
+			AAS.Funcs.openVotes()
+		else
+			AAS.Funcs.Msg({Colors.BasicCol, "(" .. Count .. "/" .. MinPlayers .. ") votes to open the votemap menu."})
+		end
+	end
+
+	local function OpenRTV()
+		AAS.Funcs.Msg({Colors.BasicCol, "Votemap is open, type '!rtv' or click the vote button in the scoreboard to vote on starting"})
+
+		AAS.OpenVoting	= true
+
+		hook.Add("PlayerConnect", "AAS.RTVDisconnectCheck", UpdateRTV)
+		hook.Add("PlayerDisconnected", "AAS.RTVDisconnectCheck", UpdateRTV)
+	end
+	AAS.Funcs.openRTV	= OpenRTV
+
+	local function ServerRTV(ply)
+		if not AAS.OpenVoting then return false, "RTV is not open!" end
+
+		if RTVVoteData[ply] then return false, "You have already voted!" end
+
+		RTVVoteData[ply] = true
+
+		UpdateRTV()
+
+		return true
+	end
+	AAS.Funcs.serverRTV	= ServerRTV
 
 	do
 		do	-- Network
 
 			-- Receives vote info and updates clients about that, otherwise will send a rude message to anyone thats trying to circumvent it
 			net.Receive("AAS.ReceiveVote", function(_, ply)
-				if not AAS.Voting then aasMsg({Colors.ErrorCol, "Bugger off"}, ply) return end
+				if not AAS.Voting then AAS.Funcs.Msg({Colors.ErrorCol, "Bugger off"}, ply) return end
 				local Choice = net.ReadString()
 
 				VoteData[ply] = Choice
 
 				UpdateVotes()
+			end)
+
+			net.Receive("AAS.ReceiveRTV", function(_, ply)
+				if not AAS.OpenVoting then AAS.Funcs.Msg({Colors.ErrorCol, "Bugger off"}, ply) return end
+
+				if RTVVoteData[ply] then return end
+
+				RTVVoteData[ply] = true
+
+				UpdateRTV()
 			end)
 		end
 	end
@@ -142,6 +230,12 @@ else	-- Cient
 			net.WriteString(choice)
 		net.SendToServer()
 	end
+
+	local function SendRTV()
+		net.Start("AAS.ReceiveRTV")
+		net.SendToServer()
+	end
+	AAS.Funcs.sendRTV	= SendRTV
 
 	if VotePanel then VotePanel:Remove() end
 	local function VoteMenu()
@@ -221,7 +315,7 @@ else	-- Cient
 		end
 	end
 
-	-- Opens the vote menu, with a timer as well as if "rock the vote" can occur
+	-- Opens the vote menu, with a timer shown
 	net.Receive("AAS.OpenVotes", function()
 		Time	= net.ReadFloat()
 		Choices	= net.ReadTable()

@@ -40,7 +40,7 @@ cmdSettings = {
 BAdmin.Utilities.addCommand("aas_save", callfunc, cmdSettings)
 
 
-function callfunc() -- Save
+function callfunc() -- Vote
 	AAS.Funcs.openVotes()
 
 	return true
@@ -52,3 +52,19 @@ cmdSettings = {
 	["RCONCanUse"] = true
 }
 BAdmin.Utilities.addCommand("aas_openvote", callfunc, cmdSettings)
+
+
+function callfunc(ply) -- RTV Vote
+	local voted, reason = AAS.Funcs.serverRTV(ply)
+
+	if not voted then return false, reason end
+
+	return true
+end
+
+cmdSettings = {
+	["Help"] = "Vote towards opening votemap.",
+	["MinimumPrivilege"] = 0,
+	["RCONCanUse"] = false
+}
+BAdmin.Utilities.addCommand("rtv", callfunc, cmdSettings)

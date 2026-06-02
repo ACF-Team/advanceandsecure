@@ -400,28 +400,27 @@ function scoreboard:show()
 			end
 		end
 
-		local requestCostScript	= vgui.Create("DButton", buttonPanel)
-		requestCostScript:SetText("")
-		requestCostScript:SetSize(UU * 3, UU * 0.5)
-		requestCostScript:DockMargin(0, 4, 4, 4)
-		requestCostScript.h	= 0
-		requestCostScript.Paint	= function(panel, w, h)
+		local voteButton	= vgui.Create("DButton", buttonPanel)
+		voteButton:SetText("")
+		voteButton:SetSize(UU * 3, UU * 0.5)
+		voteButton:DockMargin(0, 4, 4, 4)
+		voteButton.h	= 0
+		voteButton.Paint	= function(panel, w, h)
 			draw.RoundedBox(8, 0, 0, w, h, Color(255, 255, 127))
 
 			panel.h	= Lerp(0.1, panel.h, panel:IsHovered() and 100 or 0)
 			draw.RoundedBox(4, 4, 4, w - 8, h - 8, BaseColor:Lerp(HoverColor, panel.h / 100))
 
-			draw.SimpleTextOutlined("Request Cost Script", "BasicFontLarge", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+			draw.SimpleTextOutlined("Vote", "BasicFontLarge", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
 		end
-		requestCostScript.DoClick	= function()
+		voteButton.DoClick	= function()
 			scoreboard:hide()
 
-			net.Start("AAS.RequestCostScript")
-			net.SendToServer()
+			AAS.Funcs.sendRTV()
 		end
 
 		requestDupes:Dock(LEFT)
-		requestCostScript:Dock(RIGHT)
+		voteButton:Dock(RIGHT)
 		switchTeam:Dock(FILL)
 	end
 

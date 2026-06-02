@@ -158,10 +158,10 @@ if SERVER then
 
 			local Pass = Ply:ChargeRequisition(cost, "Refilling (" .. curwep.PrintName .. ") ammo")
 			if Pass then
-				if not Quiet then aasMsg({Colors.BasicCol, "(" .. curwep.PrintName .. ") has been refilled. Press E again to refill everything!"}, Ply) end
+				if not Quiet then AAS.Funcs.Msg({Colors.BasicCol, "(" .. curwep.PrintName .. ") has been refilled. Press E again to refill everything!"}, Ply) end
 				Ply:GiveAmmo(curwepAmmoDiff, curwep.Primary.Ammo)
 			else
-				if not Quiet then aasMsg({Colors.ErrorCol, "You can't afford to refill ammo for (" .. curwep.PrintName .. ") (" .. cost .. ")!"}, Ply) end
+				if not Quiet then AAS.Funcs.Msg({Colors.ErrorCol, "You can't afford to refill ammo for (" .. curwep.PrintName .. ") (" .. cost .. ")!"}, Ply) end
 			end
 		else -- fill ALL of the weapons according to the max overall allowed
 			for _, v in ipairs(Weapons) do
@@ -170,7 +170,7 @@ if SERVER then
 			end
 
 			if Free == true then
-				if not Quiet then aasMsg({Colors.BasicCol, "All of your ammo has been refilled for free."}, Ply) end
+				if not Quiet then AAS.Funcs.Msg({Colors.BasicCol, "All of your ammo has been refilled for free."}, Ply) end
 				for k, v in pairs(maxlist) do
 					Ply:GiveAmmo(v, k)
 				end
@@ -186,15 +186,15 @@ if SERVER then
 			if cost ~= 0 then
 				local Pass = Ply:ChargeRequisition(cost, "Refilling all ammo")
 				if Pass then
-					if not Quiet then aasMsg({Colors.BasicCol, "All of your ammo has been refilled."}, Ply) end
+					if not Quiet then AAS.Funcs.Msg({Colors.BasicCol, "All of your ammo has been refilled."}, Ply) end
 					for k, v in pairs(maxlist) do
 						Ply:GiveAmmo(v, k)
 					end
 				else
-					if not Quiet then aasMsg({Colors.ErrorCol, "You can't afford to refill all of your ammo! (" .. cost .. ")"}, Ply) end
+					if not Quiet then AAS.Funcs.Msg({Colors.ErrorCol, "You can't afford to refill all of your ammo! (" .. cost .. ")"}, Ply) end
 				end
 			else
-				if not Quiet then aasMsg({Colors.BasicCol, "All of your ammo is already full!"}, Ply) end
+				if not Quiet then AAS.Funcs.Msg({Colors.BasicCol, "All of your ammo is already full!"}, Ply) end
 			end
 		end
 	end
@@ -297,11 +297,11 @@ if SERVER then
 		ply.PlayerLoadout = Loadout
 
 		if PlyInSafezone(ply, ply:GetPos()) then
-			aasMsg({Colors.BasicCol, "Your loadout has been saved!"}, ply)
+			AAS.Funcs.Msg({Colors.BasicCol, "Your loadout has been saved!"}, ply)
 			ply.FirstSpawn = true
 			ply:Spawn()
 		else
-			aasMsg({Colors.BasicCol, "Your loadout has been saved, but you aren't in a safezone!"}, ply)
+			AAS.Funcs.Msg({Colors.BasicCol, "Your loadout has been saved, but you aren't in a safezone!"}, ply)
 		end
 	end)
 
@@ -327,7 +327,7 @@ if SERVER then
 		self:SetNW2Int("AAS.LoadoutCost", LoadoutData.cost or 0)
 
 		if not Pass then
-			aasMsg({Colors.BadCol, "You can't afford your loadout! Giving default loadout... (your loadout is still saved)"}, self)
+			AAS.Funcs.Msg({Colors.BadCol, "You can't afford your loadout! Giving default loadout... (your loadout is still saved)"}, self)
 			LoadoutData = NewPlyManager.BuildLoadout(table.Copy(NewPlyManager.DefaultLoadout), table.Copy(NewPlyManager.DefaultLoadout))
 		end
 
@@ -419,7 +419,7 @@ if SERVER then
 				table.Add(msg, {"This should be a tie-breaker!"})
 			end
 
-			aasMsg(msg, ply)
+			AAS.Funcs.Msg(msg, ply)
 
 			ply:SetNW2Int("KnownRound", AAS.RoundCounter)
 		end

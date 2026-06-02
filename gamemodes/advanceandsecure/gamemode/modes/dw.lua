@@ -65,7 +65,7 @@ GMT.Save	= function(MapData) -- Return false to abort saving for any reason
 			table.insert(MapData.Nodes, nodeData)
 		end
 	else
-		aasMsg({Colors.ErrorCol, "[AAS] No resource nodes detected! Aborting"})
+		AAS.Funcs.Msg({Colors.ErrorCol, "[AAS] No resource nodes detected! Aborting"})
 		return false
 	end
 

@@ -33,8 +33,8 @@ function ENT:PhysgunPickup()
 end
 
 function ENT:Use(activator, caller) -- activator and caller are usually the same, except for proxies (wire_user)
-	if activator ~= caller then aasMsg({Color(255, 0, 0), "You aren't allowed to remotely use this!"}, activator) return end
-	if CapStatus(self) ~= activator:Team() then aasMsg({Color(255, 0, 0), "This is not your point!"}, activator) return end
+	if activator ~= caller then AAS.Funcs.Msg({Color(255, 0, 0), "You aren't allowed to remotely use this!"}, activator) return end
+	if CapStatus(self) ~= activator:Team() then AAS.Funcs.Msg({Color(255, 0, 0), "This is not your point!"}, activator) return end
 
 	if self:GetIsSpawn() == true then
 		NewPlyManager.ChargeAmmo(activator, true)
@@ -55,7 +55,7 @@ function ENT:Use(activator, caller) -- activator and caller are usually the same
 				crate.Ammo = crate.Capacity
 			end
 
-			aasMsg({Colors.BasicCol, "All nearby (" .. #AmmoCrates .. ") ammo crates have been refilled for free."}, activator)
+			AAS.Funcs.Msg({Colors.BasicCol, "All nearby (" .. #AmmoCrates .. ") ammo crates have been refilled for free."}, activator)
 		end
 	else
 		NewPlyManager.ChargeAmmo(activator, false)
@@ -114,7 +114,7 @@ function ENT:Think()
 		local Seated = v:InVehicle()
 		local PointMod = Seated and 0.25 or 1
 
-		if InRange(self, v:GetPos()) and checkConnection(self, AAS.State.Alias, AAS.State.Data["Line"], AAS.State.LineLookup, Team) then
+		if v:Alive() and InRange(self, v:GetPos()) and checkConnection(self, AAS.State.Alias, AAS.State.Data["Line"], AAS.State.LineLookup, Team) then
 			if Team == 1 then Cap1 = Cap1 + PointMod elseif Team == 2 then Cap2 = Cap2 + PointMod end
 			if (not Seated) and (Capture ~= (Team == 1 and 100 or -100)) then AAS.Funcs.AdjustKarma(v, 1) AAS.Funcs.AddPlayerXP(v, 1) end
 		end

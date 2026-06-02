@@ -46,6 +46,7 @@ if SERVER then
 		util.AddNetworkString("AAS.UpdateServerSettings")
 		util.AddNetworkString("AAS.ReceivePlayerLoadout")
 		util.AddNetworkString("AAS.ReceiveVote")
+		util.AddNetworkString("AAS.ReceiveRTV")
 		util.AddNetworkString("AAS.RequestMapScan")
 
 		util.AddNetworkString("AAS.ReceiveCostScript")

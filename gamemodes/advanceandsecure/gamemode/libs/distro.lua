@@ -91,9 +91,9 @@ if SERVER then
 			-- Sends dupe info to the client when they want to download it
 			net.Receive("AAS.RequestDupe", function(_, ply)
 				local ChosenDupe = net.ReadString()
-				if not DupeList[ChosenDupe] then aasMsg({Colors.ErrorCol, "Invalid dupe! Try again!"}, ply) return end
+				if not DupeList[ChosenDupe] then AAS.Funcs.Msg({Colors.ErrorCol, "Invalid dupe! Try again!"}, ply) return end
 
-				aasMsg({Colors.BasicCol, "Attempting to download " .. ChosenDupe .. "..."}, ply)
+				AAS.Funcs.Msg({Colors.BasicCol, "Attempting to download " .. ChosenDupe .. "..."}, ply)
 				FileQueue[ply] = {file = ChosenDupe, state = "pending", step = 0, size = DupeList[ChosenDupe].size}
 
 				SendChunk(ply)

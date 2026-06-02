@@ -46,12 +46,12 @@ function ENT:UpdateTransmitState() return TRANSMIT_ALWAYS end
 function ENT:ACF_PreDamage() return false end
 
 function ENT:Use(activator, caller) -- activator and caller are usually the same, except for proxies (wire_user)
-	if activator ~= caller then aasMsg({Color(255, 0, 0), "You aren't allowed to remotely use this!"}, activator) return end
+	if activator ~= caller then AAS.Funcs.Msg({Color(255, 0, 0), "You aren't allowed to remotely use this!"}, activator) return end
 
 	-- When allowed to (minimum time from the last time a package was spawned? or maybe minimum amount of resource required to spawn) create a package with the resources in it that must be carried back to base
 
 	if IsValid(self:GetNW2Entity("package", nil)) then
-		aasMsg({Color(255, 0, 0), "There is still a package, go find it!"}, activator)
+		AAS.Funcs.Msg({Color(255, 0, 0), "There is still a package, go find it!"}, activator)
 
 		return
 	end
@@ -73,7 +73,7 @@ function ENT:Use(activator, caller) -- activator and caller are usually the same
 
 		self:NextThink(CurTime() + 5)
 	else
-		aasMsg({Color(255, 0, 0), "This node is not ready yet! A minimum of " .. math.ceil(self:GetResourceMax() / 4) .. " is required to spawn a package."}, activator)
+		AAS.Funcs.Msg({Color(255, 0, 0), "This node is not ready yet! A minimum of " .. math.ceil(self:GetResourceMax() / 4) .. " is required to spawn a package."}, activator)
 	end
 end
 

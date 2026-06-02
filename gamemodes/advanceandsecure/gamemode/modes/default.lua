@@ -65,7 +65,7 @@ DefaultMode.CheckWin	= function() -- Called when checking to see if the round sh
 	if (TixA == 0) and (TixB == 0) then -- tie, somehow
 		Reset = true
 
-		aasMsg({Colors.BasicCol, "It's a tie!"})
+		AAS.Funcs.Msg({Colors.BasicCol, "It's a tie!"})
 	elseif TixA == 0 then -- team A loses
 		Reset = true
 
@@ -75,9 +75,9 @@ DefaultMode.CheckWin	= function() -- Called when checking to see if the round sh
 		local Col	= Color(TC.x, TC.y, TC.z)
 
 		if team.GetScore(2) >= 2 then
-			aasMsg({Col, TeamB.Name, Colors.BasicCol, " wins the game!"})
+			AAS.Funcs.Msg({Col, TeamB.Name, Colors.BasicCol, " wins the game!"})
 		else
-			aasMsg({Col, TeamB.Name, Colors.BasicCol, " wins the round!"})
+			AAS.Funcs.Msg({Col, TeamB.Name, Colors.BasicCol, " wins the round!"})
 		end
 
 		AAS.Funcs.AddTeamXP(2, 100)
@@ -90,9 +90,9 @@ DefaultMode.CheckWin	= function() -- Called when checking to see if the round sh
 		local Col	= Color(TC.x, TC.y, TC.z)
 
 		if team.GetScore(1) >= 2 then
-			aasMsg({Col, TeamA.Name, Colors.BasicCol, " wins the game!"})
+			AAS.Funcs.Msg({Col, TeamA.Name, Colors.BasicCol, " wins the game!"})
 		else
-			aasMsg({Col, TeamA.Name, Colors.BasicCol, " wins the round!"})
+			AAS.Funcs.Msg({Col, TeamA.Name, Colors.BasicCol, " wins the round!"})
 		end
 
 		AAS.Funcs.AddTeamXP(1, 100)
@@ -176,7 +176,7 @@ do	-- Hookery
 				attacker:SetFrags(attacker:Frags() - 2)
 
 				AAS.Funcs.AdjustKarma(attacker, -25)
-				aasMsg({Colors.BadCol, "You just teamkilled " .. victim:Nick() .. "!"}, attacker)
+				AAS.Funcs.Msg({Colors.BadCol, "You just teamkilled " .. victim:Nick() .. "!"}, attacker)
 
 				if victim:IsPlayer() then victim:SetNW2Float("NextSpawn", CurTime() + 1) end -- pity respawn timer for the player that got teamkilled
 			end
@@ -224,7 +224,7 @@ do	-- Hookery
 
 				timer.Simple(1, function() ply:Spawn() end)
 			else
-				if not AAS.Spawnpoints then aasMsg({Colors.ErrorCol, "AAS: No spawnpoints found"}) return end
+				if not AAS.Spawnpoints then AAS.Funcs.Msg({Colors.ErrorCol, "AAS: No spawnpoints found"}) return end
 
 				if not ply.FirstSpawn then -- Deduct 1 ticket from the team for respawning
 					if AAS.Funcs.GetSetting("Death ticket loss", false) == true then AAS.Funcs.DoTicketChange(Team, -1, true) end
@@ -232,7 +232,7 @@ do	-- Hookery
 
 				local List = AAS.Spawnpoints[Team]
 
-				if GetGlobalBool("EditMode", false) then aasMsg({Colors.GoodCol, "AAS: Server is in edit mode, vanilla spawns are used."}, ply) return end
+				if GetGlobalBool("EditMode", false) then AAS.Funcs.Msg({Colors.GoodCol, "AAS: Server is in edit mode, vanilla spawns are used."}, ply) return end
 
 				return List[math.random(#List)]
 			end
@@ -250,7 +250,7 @@ do	-- Hookery
 		-- Prevents ACF damage inside a safezone
 		AAS.Funcs.AddHook(DefaultMode, "ACF_PreDamageEntity", function(Entity, _, DmgInfo)
 			if InSafezone(Entity:GetPos()) then
-				if DmgInfo:GetAttacker() and DmgInfo:GetAttacker():IsPlayer() then aasMsg({Colors.ErrorCol, "You can't hurt things in a safezone!"}, DmgInfo:GetAttacker()) end
+				if DmgInfo:GetAttacker() and DmgInfo:GetAttacker():IsPlayer() then AAS.Funcs.Msg({Colors.ErrorCol, "You can't hurt things in a safezone!"}, DmgInfo:GetAttacker()) end
 				return false
 			end
 		end)
@@ -258,7 +258,7 @@ do	-- Hookery
 		-- Prevents shooting inside a safezone
 		AAS.Funcs.AddHook(DefaultMode, "ACF_FireShell", function(Gun)
 			if InSafezone(Gun:GetPos()) then
-				if Gun.Owner and Gun.Owner:IsPlayer() then aasMsg({Colors.ErrorCol, "You can't shoot in a safezone!"}, Gun.Owner) end
+				if Gun.Owner and Gun.Owner:IsPlayer() then AAS.Funcs.Msg({Colors.ErrorCol, "You can't shoot in a safezone!"}, Gun.Owner) end
 				return false
 			end
 		end)
@@ -289,7 +289,7 @@ do	-- Hookery
 			if GetGlobalBool("EditMode", false) then return true end
 			if ExplicitFilter[tool] then return true end
 
-			if not (PlyInSafezone(ply, ply:GetPos()) and InSafezone(trace.HitPos)) then aasMsg({Colors.BadCol, "You can't use the toolgun outside of your safezone!"}, ply) return false end
+			if not (PlyInSafezone(ply, ply:GetPos()) and InSafezone(trace.HitPos)) then AAS.Funcs.Msg({Colors.BadCol, "You can't use the toolgun outside of your safezone!"}, ply) return false end
 
 			return
 		end)
@@ -323,24 +323,24 @@ do	-- Hookery
 		end)
 
 		-- Prevents the player from spawning weapons (SpawnSWEP spawns in world with toolgun, GiveSWEP is spawning directly in their hands)
-		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnSWEP", function(ply) if not GetGlobalBool("EditMode", false) then aasMsg({Colors.ErrorCol, "You can't spawn weapons!"}, ply) return false end end) -- This is for SPAWNING IN THE WORLD
-		AAS.Funcs.AddHook(DefaultMode, "PlayerGiveSWEP", function(ply) if not GetGlobalBool("EditMode", false) then aasMsg({Colors.ErrorCol, "You can't spawn weapons!"}, ply) return false end end) -- This is for GIVING THE PLAYER WEAPONS DIRECTLY
+		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnSWEP", function(ply) if not GetGlobalBool("EditMode", false) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn weapons!"}, ply) return false end end) -- This is for SPAWNING IN THE WORLD
+		AAS.Funcs.AddHook(DefaultMode, "PlayerGiveSWEP", function(ply) if not GetGlobalBool("EditMode", false) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn weapons!"}, ply) return false end end) -- This is for GIVING THE PLAYER WEAPONS DIRECTLY
 
 		-- Prevents the player from spawning NPCs, effects, and ragdolls
-		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnNPC", function(ply) if not GetGlobalBool("EditMode", false) then aasMsg({Colors.ErrorCol, "You can't spawn NPCs!"}, ply) return false end end)
-		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnEffect", function(ply) if not GetGlobalBool("EditMode", false) then aasMsg({Colors.ErrorCol, "You can't spawn effects!"}, ply) return false end end)
-		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnRagdoll", function(ply) if not GetGlobalBool("EditMode", false) then aasMsg({Colors.ErrorCol, "You can't spawn ragdolls!"}, ply) return false end end)
+		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnNPC", function(ply) if not GetGlobalBool("EditMode", false) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn NPCs!"}, ply) return false end end)
+		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnEffect", function(ply) if not GetGlobalBool("EditMode", false) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn effects!"}, ply) return false end end)
+		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnRagdoll", function(ply) if not GetGlobalBool("EditMode", false) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn ragdolls!"}, ply) return false end end)
 
 		-- Prevents the player from spawning props outside their safezone
 		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnProp", function(ply)
 			if GetGlobalBool("EditMode", false) then return end
-			if not PlyInSafezone(ply, ply:GetPos()) then aasMsg({Colors.ErrorCol, "You can't spawn props outside of the safezone!"}, ply) return false end
+			if not PlyInSafezone(ply, ply:GetPos()) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn props outside of the safezone!"}, ply) return false end
 		end)
 
 		-- Prevents the player from spawning props outside the safezone (this is post-spawn, and will delete if it still managed to get spawned)
 		AAS.Funcs.AddHook(DefaultMode, "PlayerSpawnedProp", function(ply, _, ent)
 			if GetGlobalBool("EditMode", false) then return end
-			if not InSafezone(ent:GetPos()) then aasMsg({Colors.ErrorCol, "You can't spawn props outside of the safezone!"}, ply) ent:Remove() end
+			if not InSafezone(ent:GetPos()) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn props outside of the safezone!"}, ply) ent:Remove() end
 		end)
 	end
 	do	-- Entity prevention
@@ -355,10 +355,10 @@ do	-- Hookery
 			local victable = list.GetEntry("Vehicles", vicname)
 
 			if (victable and BannedVehicles[victable.Class]) or false then
-				aasMsg({Colors.ErrorCol, "You aren't allowed to spawn '" .. victable.Name  .. "'!"}, ply)
+				AAS.Funcs.Msg({Colors.ErrorCol, "You aren't allowed to spawn '" .. victable.Name  .. "'!"}, ply)
 				return false
 			end
-			if not PlyInSafezone(ply, ply:GetPos()) then aasMsg({Colors.ErrorCol, "You can't spawn stuff outside of the safezone!"}, ply) return false end
+			if not PlyInSafezone(ply, ply:GetPos()) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn stuff outside of the safezone!"}, ply) return false end
 			return true
 		end)
 
@@ -380,12 +380,12 @@ do	-- Hookery
 
 			for _, v in ipairs(SENTBlockList) do
 				if string.find(class, v) then
-					aasMsg({Colors.ErrorCol, "You can't spawn ", class, "!"}, ply)
+					AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn ", class, "!"}, ply)
 					return false
 				end
 			end
 
-			if not PlyInSafezone(ply, ply:GetPos()) then aasMsg({Colors.ErrorCol, "You can't spawn stuff outside of the safezone!"}, ply) return false end
+			if not PlyInSafezone(ply, ply:GetPos()) then AAS.Funcs.Msg({Colors.ErrorCol, "You can't spawn stuff outside of the safezone!"}, ply) return false end
 		end)
 
 		local SpecialSENTBlockList = {
@@ -401,7 +401,7 @@ do	-- Hookery
 		}
 		-- Prevents the player from spawning other special entities they shouldn't have
 		AAS.Funcs.AddHook(DefaultMode, "OnEntityCreated", function(ent)
-			if SpecialSENTBlockList[ent:GetClass()] then aasMsg({Colors.ErrorCol, "Someone is trying to spawn '", ent:GetClass(), "'!"}) timer.Simple(0, function() ent:Remove() end) end
+			if SpecialSENTBlockList[ent:GetClass()] then AAS.Funcs.Msg({Colors.ErrorCol, "Someone is trying to spawn '", ent:GetClass(), "'!"}) timer.Simple(0, function() ent:Remove() end) end
 		end)
 	end
 end

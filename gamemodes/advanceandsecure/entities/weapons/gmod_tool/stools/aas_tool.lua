@@ -265,12 +265,12 @@ function TOOL:Reload()
 		return
 	elseif op == 1 then
 		if stage > 0 then
-			if SERVER then aasMsg({Colors.white, "Cleared the manual link list on the tool."}) end
+			if SERVER then AAS.Funcs.Msg({Colors.white, "Cleared the manual link list on the tool."}) end
 			self:SetStage(0)
 			self.ManualLink = {}
 		else
 			if SERVER then
-				aasMsg({Colors.white, "Cleared the manual link list on the map."})
+				AAS.Funcs.Msg({Colors.white, "Cleared the manual link list on the map."})
 				if AAS.State.Data["Line"] then AAS.State.Data["Line"] = nil end
 			end
 		end

@@ -268,7 +268,7 @@ end
 local function EnemySZCountdown(ply)
 	if ply.DeathCountdown == nil then return end -- something else, like a round restart, set this to nil
 	if PlyInEnemySafezone(ply, ply:GetPos()) then
-		aasMsg({Colors.ErrorCol, "You have " .. ply.DeathCountdown .. " seconds to leave the enemy safezone."}, ply)
+		AAS.Funcs.Msg({Colors.ErrorCol, "You have " .. ply.DeathCountdown .. " seconds to leave the enemy safezone."}, ply)
 		ply.DeathCountdown = ply.DeathCountdown - 1
 
 		if ply.DeathCountdown >= 0 then
@@ -279,7 +279,7 @@ local function EnemySZCountdown(ply)
 			ply:Kill()
 		end
 	else
-		aasMsg({Colors.BasicCol, "You have ", Colors.GoodCol, "left", Colors.BasicCol, " the ", Colors.BadCol, "enemy", Colors.BasicCol, " safezone."}, ply)
+		AAS.Funcs.Msg({Colors.BasicCol, "You have ", Colors.GoodCol, "left", Colors.BasicCol, " the ", Colors.BadCol, "enemy", Colors.BasicCol, " safezone."}, ply)
 		ply.DeathCountdown = nil
 	end
 end
@@ -289,16 +289,16 @@ local function SafezoneCheck()
 		local state = PlyInSafezone(ply, ply:GetPos())
 		if ply:GetNW2Bool("InSafezone") ~= state then
 			if state then
-				aasMsg({Colors.BasicCol, "You have ", Colors.GoodCol, "entered", Colors.BasicCol, " the safezone."}, ply)
+				AAS.Funcs.Msg({Colors.BasicCol, "You have ", Colors.GoodCol, "entered", Colors.BasicCol, " the safezone."}, ply)
 			else
-				aasMsg({Colors.BasicCol, "You have ", Colors.BadCol, "left", Colors.BasicCol, " the safezone."}, ply)
+				AAS.Funcs.Msg({Colors.BasicCol, "You have ", Colors.BadCol, "left", Colors.BasicCol, " the safezone."}, ply)
 			end
 
 			ply:SetNW2Bool("InSafezone", state) -- this doesn't affect anything right now except for what the client sees, InSafezone is checked for every damage interaction again
 		end
 
 		if PlyInEnemySafezone(ply, ply:GetPos()) and (GetGlobalBool("EditMode", false) == false) and (not ply.DeathCountdown and ply:Alive()) then
-			aasMsg({Colors.BasicCol, "You have ", Colors.BadCol, "entered", Colors.BasicCol, " the ", Colors.BadCol, "enemy", Colors.BasicCol, " safezone."}, ply)
+			AAS.Funcs.Msg({Colors.BasicCol, "You have ", Colors.BadCol, "entered", Colors.BasicCol, " the ", Colors.BadCol, "enemy", Colors.BasicCol, " safezone."}, ply)
 			ply.DeathCountdown = 5
 
 			EnemySZCountdown(ply)
@@ -333,7 +333,7 @@ local function BalanceTeams()
 		ply:StripWeapons()
 		ply:StripAmmo()
 		ply:Spawn()
-		aasMsg({Colors.BasicCol, "Moving " .. ply:Nick() .. " to ", SmallerTeamInfo.Color, SmallerTeamInfo.Name, Colors.BasicCol, "!"})
+		AAS.Funcs.Msg({Colors.BasicCol, "Moving " .. ply:Nick() .. " to ", SmallerTeamInfo.Color, SmallerTeamInfo.Name, Colors.BasicCol, "!"})
 	end
 end
 
@@ -378,7 +378,7 @@ local function MainTick()
 			if AutoBalanceTick >= 6 then
 				AutoBalance = true
 				AutoBalanceTick = 0
-				aasMsg({Colors.BasicCol, "Autobalancing teams in 5s..."})
+				AAS.Funcs.Msg({Colors.BasicCol, "Autobalancing teams in 5s..."})
 			end
 		else AutoBalanceTick = 0 end
 

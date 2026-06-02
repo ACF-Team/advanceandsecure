@@ -16,11 +16,10 @@ Map setup is a breeze with a built-in STool which is only available to admins wh
 
 - [AdvDupe2](https://github.com/wiremod/advdupe2) distribution system (simply add files to distributables/advdupe2), allowing servers to provide dupes to players
 
-- Cost calculator available as an E2, which is generated using the server's settings, and acquired which a simple click
-
 ### Integrations
 
 - Has integration with another addon of mine, [BAdmin](https://github.com/LiddulBOFH/badmin)
+- Limited support for ULX (disables uTeam so that the gamemode may function correctly) (commands to come, some day)
 
 ### Usage
 
