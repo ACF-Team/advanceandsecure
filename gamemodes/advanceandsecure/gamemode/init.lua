@@ -7,7 +7,7 @@ local ST = SysTime
 
 -- Initialize
 
-local RandomMapStart	= CreateConVar("aas_randommapstart", 1, {FCVAR_ARCHIVE}, "Whether or not the game will pick a random map on first startup.", 0, 1)
+local RandomMapStart	= CreateConVar("aas_randommapstart", 0, {FCVAR_ARCHIVE}, "Whether or not the game will pick a random map on first startup.", 0, 1)
 local MapChanges		= CreateConVar("aas_mapchanges", 0, {FCVAR_ARCHIVE, FCVAR_UNREGISTERED})
 
 function GM:Initialize()
