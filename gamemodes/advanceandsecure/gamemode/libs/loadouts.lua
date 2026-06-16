@@ -422,6 +422,8 @@ if SERVER then
 			AAS.Funcs.Msg(msg, ply)
 
 			ply:SetNW2Int("KnownRound", AAS.RoundCounter)
+
+			if AAS.OpenVoting then AAS.Funcs.Msg({Colors.BasicCol, "Votemap is currently open, click 'Vote' on the scoreboard to vote for starting it!"}) end
 		end
 
 		return true

@@ -1,7 +1,7 @@
 "advanceandsecure"
 {
 	"base"	"base"
-	"title"	"Advance and Secure"
+	"title"	"Sandbox"
 	"category"	"pvp"
 	"menusystem"	"1"
 }
