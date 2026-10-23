@@ -50,12 +50,12 @@ function ENT:Use(activator, caller) -- activator and caller are usually the same
 			if AAS.Funcs.EntInPlayerSafezone(crate, activator) then table.insert(ValidCrates, crate) end
 		end
 
-		if #AmmoCrates > 0 then
-			for _, crate in ipairs(AmmoCrates) do
-				crate.Ammo = crate.Capacity
+		if #ValidCrates > 0 then
+			for _, crate in ipairs(ValidCrates) do
+				crate:SetAmount(crate.Capacity)
 			end
 
-			AAS.Funcs.Msg({Colors.BasicCol, "All nearby (" .. #AmmoCrates .. ") ammo crates have been refilled for free."}, activator)
+			AAS.Funcs.Msg({Colors.BasicCol, "All nearby (" .. #ValidCrates .. ") ammo crates have been refilled for free."}, activator)
 		end
 	else
 		NewPlyManager.ChargeAmmo(activator, false)

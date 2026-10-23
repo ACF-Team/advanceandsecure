@@ -248,15 +248,19 @@ do	-- Hookery
 
 	do	-- ACF prevention
 		-- Prevents ACF damage inside a safezone
-		AAS.Funcs.AddHook(DefaultMode, "ACF_PreDamageEntity", function(Entity, _, DmgInfo)
+		AAS.Funcs.AddHook(DefaultMode, "ACF_PreDamageEntity", function(Entity, DmgResult, DmgInfo)
 			if InSafezone(Entity:GetPos()) then
 				if DmgInfo:GetAttacker() and DmgInfo:GetAttacker():IsPlayer() then AAS.Funcs.Msg({Colors.ErrorCol, "You can't hurt things in a safezone!"}, DmgInfo:GetAttacker()) end
 				return false
 			end
+
+			-- ACF's damage permissions are taken off the hook while this runs, so they get checked here instead
+			local Permissions = AAS.DisplacedHooks.ACF_PreDamageEntity
+			if Permissions then return Permissions(Entity, DmgResult, DmgInfo) end
 		end)
 
 		-- Prevents shooting inside a safezone
-		AAS.Funcs.AddHook(DefaultMode, "ACF_FireShell", function(Gun)
+		AAS.Funcs.AddHook(DefaultMode, "ACF_PreFireWeapon", function(Gun)
 			if InSafezone(Gun:GetPos()) then
 				if Gun.Owner and Gun.Owner:IsPlayer() then AAS.Funcs.Msg({Colors.ErrorCol, "You can't shoot in a safezone!"}, Gun.Owner) end
 				return false
@@ -266,18 +270,19 @@ do	-- Hookery
 		-- Disables key entities if the player is over requisition
 		local MaxDist	= 2048 ^ 2
 		local LegalFilter = {acf_gun = true, acf_engine = true, acf_rack = true}
-		AAS.Funcs.AddHook(DefaultMode, "ACF_IsLegal", function(ent)
+		AAS.Funcs.AddHook(DefaultMode, "ACF_OnCheckLegal", function(ent)
 			--return IsLegal,"reason","description",OverrideTime
-			if not (LegalFilter[ent:GetClass()] or false) then return true end
+			-- Returning nothing when legal so other legality hooks still get to run
+			if not (LegalFilter[ent:GetClass()] or false) then return end
 
 			local Owner = ent:CPPIGetOwner()
+			if not IsValid(Owner) then return end
+
 			local Req = Owner:GetNW2Int("UsedRequisition")
 
 			if Req > AAS.Funcs.GetSetting("Max Requisition", 500) then return false, "Exceeded requisition", "You have exceeded your maximum requisition amount!", 5 end
 
 			if Owner:GetPos():DistToSqr(ent:GetPos()) > MaxDist then return false, "Too far", "We're not in the future, go man your shit.", 5 end
-
-			return true
 		end)
 	end
 

@@ -33,8 +33,6 @@ if SERVER then
 		util.AddNetworkString("AAS.OpenVotes")
 		util.AddNetworkString("AAS.SendMapScan")
 
-		util.AddNetworkString("AAS.RequestCostScript")
-
 		util.AddNetworkString("AAS.RequestDupeList")
 		util.AddNetworkString("AAS.RequestDupe")
 
@@ -49,7 +47,6 @@ if SERVER then
 		util.AddNetworkString("AAS.ReceiveRTV")
 		util.AddNetworkString("AAS.RequestMapScan")
 
-		util.AddNetworkString("AAS.ReceiveCostScript")
 		util.AddNetworkString("AAS.CostPanel")
 
 		util.AddNetworkString("AAS.ReceiveDupeList")

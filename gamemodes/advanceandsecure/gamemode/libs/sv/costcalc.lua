@@ -5,7 +5,6 @@ local NextReqCheck	= ST()
 local CostSystem	= ACF.Contraption.CostSystem
 
 AAS.PlyReq = {}
-AAS.RequisitionCosts = {}
 
 do
 	do	-- Functions

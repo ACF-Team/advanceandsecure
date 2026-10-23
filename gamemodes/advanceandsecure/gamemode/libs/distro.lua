@@ -69,16 +69,6 @@ if SERVER then
 	do
 		do	-- Network
 
-			-- Sends the client the generic cost calculator, which is then further updated using the current cost metrics
-			net.Receive("AAS.RequestCostScript", function(_, ply)
-				local Script = file.Read(engine.ActiveGamemode() .. "/distributables/expression2/aas_costcalc.txt", "LUA")
-
-				net.Start("AAS.ReceiveCostScript")
-					net.WriteString(Script)
-					net.WriteTable(AAS.RequisitionCosts)
-				net.Send(ply)
-			end)
-
 			-- Sends the client all of the dupes on the server
 			net.Receive("AAS.RequestDupeList", function(_, ply)
 				if not DupeList then BuildDupeList() end
@@ -102,11 +92,6 @@ if SERVER then
 	end
 
 else	-- Client
-
-	concommand.Add("aas_requestcostscript", function()
-		net.Start("AAS.RequestCostScript")
-		net.SendToServer()
-	end)
 
 	local Dupes = {}
 	local function DupeMenu()
@@ -266,91 +251,5 @@ else	-- Client
 
 		-- Actually saving the dupe
 		net.Receive("AAS.ReceiveFile", AAS_ReceiveFile)
-
-		-- Handles inserting data into the generic cost calculator E2 script thats sent, populates it with current info about any costs on the server
-		net.Receive("AAS.ReceiveCostScript", function()
-			local E2Code = net.ReadString()
-			local CostInfo = net.ReadTable()
-
-			local CostBreakdown = {}
-
-			for k in pairs(CostInfo.CalcSingleFilter) do
-				local Str = "\"" .. k .. "\""
-				if not CostBreakdown.FilterList then
-					CostBreakdown.FilterList = Str
-				else
-					CostBreakdown.FilterList = CostBreakdown.FilterList .. ", " .. Str
-				end
-			end
-
-			for k, v in pairs(CostInfo.CalcSingleFilter) do
-				local Str = "\"" .. k .. "\"=" .. v
-				if not CostBreakdown.CalcSingleFilter then
-					CostBreakdown.CalcSingleFilter = Str
-				else
-					CostBreakdown.CalcSingleFilter = CostBreakdown.CalcSingleFilter .. ", " .. Str
-				end
-			end
-
-			for k, v in pairs(CostInfo.ACFGunCost) do
-				local Str = "\"" .. k .. "\"=" .. v
-				if not CostBreakdown.ACFGunCost then
-					CostBreakdown.ACFGunCost = Str
-				else
-					CostBreakdown.ACFGunCost = CostBreakdown.ACFGunCost .. ", " .. Str
-				end
-			end
-
-			for k, v in pairs(CostInfo.ACFAmmoModifier) do
-				local Str = "\"" .. k .. "\"=" .. v
-				if not CostBreakdown.ACFAmmoModifier then
-					CostBreakdown.ACFAmmoModifier = Str
-				else
-					CostBreakdown.ACFAmmoModifier = CostBreakdown.ACFAmmoModifier .. ", " .. Str
-				end
-			end
-
-			for k, v in pairs(CostInfo.ACFMissileModifier) do
-				local Str = "\"" .. k .. "\"=" .. v
-				if not CostBreakdown.ACFMissileModifier then
-					CostBreakdown.ACFMissileModifier = Str
-				else
-					CostBreakdown.ACFMissileModifier = CostBreakdown.ACFMissileModifier .. ", " .. Str
-				end
-			end
-
-			for k, v in pairs(CostInfo.SpecialModelFilter) do
-				local Str = "\"" .. k .. "\"=" .. v
-				if not CostBreakdown.SpecialModelFilter then
-					CostBreakdown.SpecialModelFilter = Str
-				else
-					CostBreakdown.SpecialModelFilter = CostBreakdown.SpecialModelFilter .. ", " .. Str
-				end
-			end
-
-			for k, v in pairs(CostInfo.ACFRadars) do
-				local Str = "\"" .. k .. "\"=" .. v
-				if not CostBreakdown.ACFRadars then
-					CostBreakdown.ACFRadars = Str
-				else
-					CostBreakdown.ACFRadars = CostBreakdown.ACFRadars .. ", " .. Str
-				end
-			end
-
-			local FinalCode = string.format(E2Code,
-				util.DateStamp(),
-				CostBreakdown.FilterList,
-				CostBreakdown.CalcSingleFilter,
-				CostBreakdown.ACFGunCost,
-				CostBreakdown.ACFAmmoModifier,
-				CostBreakdown.ACFMissileModifier,
-				CostBreakdown.SpecialModelFilter,
-				CostBreakdown.ACFRadars)
-
-			if not file.Exists("expression2/AAS", "DATA") then file.CreateDir("expression2/AAS") end
-			file.Write("expression2/AAS/aas_costcalc.txt", FinalCode)
-
-			chat.AddText(Color(200, 200, 200), "AAS Cost script has been saved to >expression2/AAS/aas_costcalc.txt!")
-		end)
 	end
 end

@@ -4,7 +4,7 @@ MsgN("+ Modes system loaded")
 --[[
 	1. Define mode ("aas", "raas", "tc", etc)
 	2. Set variables, whatever they may be
-	3. General hooks (ACF_IsLegal)
+	3. General hooks (ACF_OnCheckLegal)
 	4. Default settings (create new settings panel that can build from this list) and ranges
 
 	Every mode will build from "default", as seen in gamemode/modes
@@ -128,6 +128,11 @@ AAS.Funcs.ApplySettings	= function(MapData)
 end
 
 do	-- Hook control
+	-- Hooks from other addons that return something on every call, hook.Run stops at the first one that does so ours might never run
+	-- While ours is running they're taken off and stored in AAS.DisplacedHooks for ours to call, then put back when ours stops
+	local Displaced		= {ACF_PreDamageEntity = "ACF_DamagePermissionCore"}
+	AAS.DisplacedHooks	= AAS.DisplacedHooks or {}
+
 	-- Adds a hook that should be loaded with the mode
 	AAS.Funcs.AddHook	= function(GMT, Hook, Func)
 		GMT.Hooks[Hook] = Func
@@ -136,6 +141,16 @@ do	-- Hook control
 	-- Actually starts running a hook, don't use this
 	AAS.Funcs.StartHook	= function(Hook, Func)
 		MsgN("== Starting hook: AAS." .. Hook)
+
+		local Other = Displaced[Hook]
+		if Other then
+			local Existing = hook.GetTable()[Hook]
+
+			if Existing and Existing[Other] then
+				AAS.DisplacedHooks[Hook] = Existing[Other]
+				hook.Remove(Hook, Other)
+			end
+		end
 
 		hook.Remove(Hook, "AAS." .. Hook) -- Just in case
 		AAS.ActiveHooks[Hook] = {event = Hook, identifier = "AAS." .. Hook}
@@ -146,6 +161,12 @@ do	-- Hook control
 	AAS.Funcs.RemoveHook = function(HookData)
 		if AAS.ActiveHooks[HookData.event] then AAS.ActiveHooks[HookData.event] = nil end
 		hook.Remove(HookData.event, HookData.identifier)
+
+		local Other = AAS.DisplacedHooks[HookData.event]
+		if Other then
+			hook.Add(HookData.event, Displaced[HookData.event], Other)
+			AAS.DisplacedHooks[HookData.event] = nil
+		end
 	end
 
 	-- Clear any active hooks
@@ -176,7 +197,7 @@ AAS.Funcs.LoadGamemode	= function(ID)
 
 	-- Purge any settings that were marked for removal
 	for k, v in pairs(AAS.GM.Settings) do
-		if type(v) == TYPE_BOOL then table.remove(k) continue end
+		if v == false then AAS.GM.Settings[k] = nil end
 	end
 
 	AAS.Funcs.Reset(true)
