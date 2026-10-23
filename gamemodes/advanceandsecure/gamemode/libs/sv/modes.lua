@@ -182,8 +182,9 @@ AAS.Funcs.LoadGamemode	= function(ID)
 	-- Remove any hooks currently active
 	AAS.Funcs.ClearHooks()
 
+	-- Copies, as table.Merge hands over nested tables by reference and the defaults would get changed with the loaded mode
 	AAS.GM	= {}
-	table.Merge(AAS.GM, AAS.DefaultMode)
+	table.Merge(AAS.GM, table.Copy(AAS.DefaultMode))
 
 	-- If for some reason an invalid mode was checked for
 	if not AAS.Modes[ID] then
@@ -193,7 +194,7 @@ AAS.Funcs.LoadGamemode	= function(ID)
 	end
 
 	-- Merge everything from the selected gamemode
-	table.Merge(AAS.GM, AAS.Modes[ID], false)
+	table.Merge(AAS.GM, table.Copy(AAS.Modes[ID]), false)
 
 	-- Purge any settings that were marked for removal
 	for k, v in pairs(AAS.GM.Settings) do
