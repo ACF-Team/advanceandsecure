@@ -14,7 +14,7 @@ Map setup is a breeze with a built-in STool which is only available to admins wh
 
 ### Features
 
-- [AdvDupe2](https://github.com/wiremod/advdupe2) distribution system (simply add files to distributables/advdupe2), allowing servers to provide dupes to players
+- [AdvDupe2](https://github.com/wiremod/advdupe2) distribution system (simply add dupe .txt files to garrysmod/data/aas/dupes on the server), allowing servers to provide dupes to players, which get saved to their advdupe2/aas folder
 
 ### Integrations
 
